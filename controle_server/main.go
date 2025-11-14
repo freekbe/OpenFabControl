@@ -2,11 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 	"net/http"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -22,6 +21,8 @@ func main() {
 	fmt.Println("")
 
 	initdb()
+	defer db.Close()
+
 	routes()
 	runHttpServer()
 
@@ -43,42 +44,4 @@ func runHttpServer() {
 	}
 	log.Printf("TLS certs not found cannot continue. bye")
 	return
-}
-
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var payload struct {
-		UUID     string `json:"uuid"`
-		Approved *bool  `json:"approved,omitempty"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		http.Error(w, "invalid json", http.StatusBadRequest)
-		return
-	}
-	if payload.UUID == "" {
-		http.Error(w, "missing uuid", http.StatusBadRequest)
-		return
-	}
-
-	// default approved to false if not provided
-	approved := false
-	if payload.Approved != nil {
-		approved = *payload.Approved
-	}
-
-	// insert or update
-	query := `INSERT INTO machin_controller (uuid, approved) VALUES ($1, $2)
-		ON CONFLICT (uuid) DO UPDATE SET approved = EXCLUDED.approved`
-	if _, err := db.Exec(query, payload.UUID, approved); err != nil {
-		log.Printf("db insert error: %v", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"msg": "registration saved", "uuid": payload.UUID, "approved": approved})
 }

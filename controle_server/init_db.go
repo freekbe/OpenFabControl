@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"context"
+	"database/sql"
+	"fmt"
+	"log"
 	"os"
 	"time"
-	"log"
-	"fmt"
 )
 
 func initdb() {
@@ -22,7 +22,6 @@ func initdb() {
 	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
-	defer db.Close()
 
 	// ensure table exists
 	if err := ensureTable(); err != nil {
