@@ -1,0 +1,7 @@
+services:
+  controle_server:
+    build:
+      context: ./controle_server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
