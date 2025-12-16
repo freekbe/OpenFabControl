@@ -1,24 +1,12 @@
-/**
- * Example detect tags and show their unique ID
- * Authors:
- *        Salvador Mendoza - @Netxing - salmg.net
- *        For Electronic Cats - electroniccats.com
- *
- * Updated by Francisco Torres - Electronic Cats - electroniccats.com
- *
- *  March 2020
- *
- * This code is beerware; if you see me (or any other collaborator
- * member) at the local, and you've found our code helpful,
- * please buy us a round!
- * Distributed as-is; no warranty is given.
- */
-
+#include <Wire.h>
 #include "Electroniccats_PN7150.h"
-#define PN7150_IRQ (36)
-#define PN7150_VEN (13)
-#define PN7150_ADDR (0x7C)
+#include <Adafruit_MCP23X17.h>
+#define PN7150_IRQ (39)
+#define PN7150_VEN (-1) // ignored by lib so i can togle it from the MCP
+#define NFC_VEN_MCP (0)
+#define PN7150_ADDR (0x28)
 
+Adafruit_MCP23X17 mcp;
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR, PN7150); // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28,specify PN7150 or PN7160 in constructor
 
 // Function prototypes
@@ -26,29 +14,44 @@ String getHexRepresentation(const byte* data, const uint32_t numBytes);
 void displayCardInfo();
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial)
     ;
-  Serial.println("Detect NFC tags with PN7150/60");
+  Serial.println("FABMAN hardware reverse engenering");
+  Serial.println("POC: NFC chip (PN7150)");
 
-  Serial.println("Initializing...");
+  // MCP part
+  if (!Wire.begin())
+    {
+        Serial.println("Failed to initialize wire");
+        while (1);
+    }
+    if (!mcp.begin_I2C(0x21)) {
+        Serial.println("Failed to initialize MCP23017");
+        while (1);
+    }
+  mcp.pinMode(NFC_VEN_MCP, OUTPUT);
+  delay(100);
+  mcp.digitalWrite(NFC_VEN_MCP, LOW);
+  delay(100);
+  mcp.digitalWrite(NFC_VEN_MCP, HIGH);
+  delay(100);
+
+  // NFC part
   if (nfc.connectNCI()) {  // Wake up the board
     Serial.println("Error while setting up the mode, check connections!");
-    while (1)
-      ;
+    while (1);
   }
 
   if (nfc.configureSettings()) {
     Serial.println("The Configure Settings is failed!");
-    while (1)
-      ;
+    while (1);
   }
 
   // Read/Write mode as default
   if (nfc.configMode()) {  // Set up the configuration mode
     Serial.println("The Configure Mode is failed!!");
-    while (1)
-      ;
+    while (1);
   }
   nfc.startDiscovery();  // NCI Discovery mode
   Serial.println("Waiting for an Card ...");
@@ -178,6 +181,3 @@ void displayCardInfo() {  // Funtion in charge to show the card/s in te field
     }
   }
 }
-
-
- i wanna  try this litle NFC test on my custom board. the problem : the IRQ is connected to the Sensor_VN of the ESP32 what GPIO should i set in the IRQ #define

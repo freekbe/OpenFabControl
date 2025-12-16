@@ -19,7 +19,11 @@ void setup() {
     Serial.println("POC : screen");
 
     // MCP23017
-    Wire.begin();
+    if (!Wire.begin())
+    {
+        Serial.println("Failed to initialize wire");
+        while (1);
+    }
     if (!mcp.begin_I2C(0x21)) {
         Serial.println("Failed to initialize MCP23017");
         while (1);
