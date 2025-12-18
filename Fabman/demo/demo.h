@@ -6,7 +6,9 @@
 enum Menu {
     INIT,
     SCAN_CARD_NO_RESERVATION,
-    MACHINE_INFO
+    MACHINE_INFO,
+    MACHINE_USAGE,
+    CONFIRM_FINISH
 };
 
 enum Event {
