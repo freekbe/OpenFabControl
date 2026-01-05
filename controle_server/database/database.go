@@ -1,15 +1,18 @@
-package main
+package database
 
 import (
 	"context"
 	"database/sql"
+	_ "github.com/lib/pq" // postgress specific package
 	"fmt"
 	"log"
 	"os"
 	"time"
 )
 
-func initdb() {
+var Self *sql.DB
+
+func Initdb() {
 	pgUser, pgPass, pgHost, pgPort, pgDB := getenv()
 
 	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", pgUser, pgPass, pgHost, pgPort, pgDB)
@@ -18,7 +21,7 @@ func initdb() {
 
 	// connect to database
 	var err error
-	db, err = connectWithRetries(dsn, 15, 2*time.Second)
+	Self, err = connectWithRetries(dsn, 15, 2*time.Second)
 	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
@@ -30,11 +33,11 @@ func initdb() {
 }
 
 func getenv() (string, string, string, string, string) {
-	pgUser := os.Getenv("POSTGRES_USER")
-	pgPass := os.Getenv("POSTGRES_PASSWORD")
-	pgHost := os.Getenv("POSTGRES_HOST")
-	pgPort := os.Getenv("POSTGRES_PORT")
-	pgDB := os.Getenv("POSTGRES_DB")
+	pgUser	:= os.Getenv("POSTGRES_USER")
+	pgPass	:= os.Getenv("POSTGRES_PASSWORD")
+	pgHost	:= os.Getenv("POSTGRES_HOST")
+	pgPort	:= os.Getenv("POSTGRES_PORT")
+	pgDB	:= os.Getenv("POSTGRES_DB")
 
 	return pgUser, pgPass, pgHost, pgPort, pgDB
 }
@@ -62,12 +65,12 @@ func connectWithRetries(dsn string, maxRetries int, delay time.Duration) (*sql.D
 }
 
 func ensureTable() error {
-	create := `CREATE TABLE IF NOT EXISTS machin_controller (
+	create := `CREATE TABLE IF NOT EXISTS machine_controller (
 		id SERIAL PRIMARY KEY,
 		uuid TEXT UNIQUE NOT NULL,
 		approved BOOLEAN NOT NULL DEFAULT false,
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);`
-	_, err := db.Exec(create)
+	_, err := Self.Exec(create)
 	return err
 }

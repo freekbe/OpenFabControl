@@ -6,6 +6,8 @@ COLIMA_START_OPTIONS = start
 # Targets
 .PHONY: up down ps logs start_colima set_context
 
+all: up
+
 up:
 	$(COMPOSE_COMMAND) up --build
 
@@ -23,6 +25,3 @@ start_colima:
 
 set_context:
 	docker context use colima
-
-# Default target (optional - can be "up")
-all: up

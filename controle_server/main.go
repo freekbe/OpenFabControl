@@ -1,16 +1,15 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	_ "github.com/lib/pq"
+	// project scope
+	"OpenFabControl/routes"
+	"OpenFabControl/database"
 )
-
-var db *sql.DB
 
 func main() {
 	fmt.Println("---------------------------------------------")
@@ -20,12 +19,11 @@ func main() {
 	fmt.Println("---------------------------------------------")
 	fmt.Println("")
 
-	initdb()
-	defer db.Close()
+	database.Initdb()
+	defer database.Self.Close()
 
-	routes()
+	routes.Setup_routes()
 	runHttpServer()
-
 	return
 }
 

@@ -1,53 +1,44 @@
-package main
+package handler
 
 import (
 	"net/http"
-	"fmt"
 	"encoding/json"
-	"log"
 	"database/sql"
+	"log"
+
+	"OpenFabControl/database"
 )
 
-func routes() {
-	http.HandleFunc("/register-controller", registerHandler)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Welcome to the control server!")
-	})
-}
-
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-	// reject non POST requests
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+// register a new machine controler
+func Register(w http.ResponseWriter, r *http.Request) {
+	reject_all_methode_exept(r, w, http.MethodPost)
 
 	var payload struct {
 		UUID     string `json:"uuid"`
 	}
 
+	// extract payload data
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
-	// validate payload
+	// validate payload data
 	if payload.UUID == "" {
 		http.Error(w, "invalid payload", http.StatusBadRequest)
 		return
 	}
 
-
-	query := `INSERT INTO machin_controller (uuid, approved) VALUES ($1, $2)
+	query := `INSERT INTO machine_controller (uuid, approved) VALUES ($1, $2)
 	ON CONFLICT (uuid) DO NOTHING`
 
 	// Check if UUID already exists
 	var existingUUID string
-	err := db.QueryRow(`SELECT uuid FROM machin_controller WHERE uuid = $1`, payload.UUID).Scan(&existingUUID)
+	err := database.Self.QueryRow(`SELECT uuid FROM machine_controller WHERE uuid = $1`, payload.UUID).Scan(&existingUUID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// UUID doesn't exist, proceed with insertion
-			_, err := db.Exec(query, payload.UUID, false)
+			_, err := database.Self.Exec(query, payload.UUID, false)
 			if err != nil {
 				log.Printf("db insert error: %v", err)
 				http.Error(w, "internal server error", http.StatusInternalServerError)
