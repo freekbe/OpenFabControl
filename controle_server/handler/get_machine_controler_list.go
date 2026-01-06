@@ -33,7 +33,15 @@ func get_machine_controler(w http.ResponseWriter, r *http.Request, approved bool
 	// translate the rows
 	for rows.Next() {
 		var controller model.Machine_controller
-		if err := rows.Scan(&controller.ID, &controller.UUID, &controller.Approved, &controller.CreatedAt); err != nil {
+		if err := rows.Scan(&controller.ID,
+							&controller.UUID,
+							&controller.ZONE,
+							&controller.NAME,
+							&controller.MANUAL,
+							&controller.PRICE_BOOKING_IN_EUR,
+							&controller.PRICE_USAGE_IN_EUR,
+							&controller.Approved,
+							&controller.CreatedAt); err != nil {
 			log.Printf("Error scanning row: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return

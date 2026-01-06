@@ -6,11 +6,10 @@ import (
 	"net/http"
 )
 
-func Approve_machine_controler(w http.ResponseWriter, r *http.Request) {
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil {
+func Delete_machine_controler(w http.ResponseWriter, r *http.Request) {
+	if reject_all_methode_exept(r, w, http.MethodDelete) != nil {
 		return
 	}
-
 	var payload struct {
 		UUID     string `json:"uuid"`
 	}
@@ -25,16 +24,16 @@ func Approve_machine_controler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	query := "UPDATE machine_controller SET approved = TRUE WHERE uuid = $1"
+	query := "DELETE FROM machine_controller WHERE uuid = $1"
 	result, err := database.Self.Exec(query, payload.UUID)
 	if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 	if rows_affected, _ := result.RowsAffected(); rows_affected == 0 {
-		http.Error(w, "No device waiting approving with this UUID", http.StatusNotFound)
+		http.Error(w, "No device with this UUID registered", http.StatusNotFound)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "Machine controler approved successfully")
+	fmt.Fprint(w, "Machine controler deleted successfully")
 }

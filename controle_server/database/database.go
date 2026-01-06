@@ -68,9 +68,14 @@ func ensureTable() error {
 	create := `CREATE TABLE IF NOT EXISTS machine_controller (
 		id SERIAL PRIMARY KEY,
 		uuid TEXT UNIQUE NOT NULL,
+		zone TEXT NOT NULL,
+		name TEXT NOT NULL,
+		manual TEXT NOT NULL,
+		price_booking_in_eur FLOAT NOT NULL,
+		price_usage_in_eur FLOAT NOT NULL,
 		approved BOOLEAN NOT NULL DEFAULT false,
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
-	);`
+	);` // FLOAT is synonym to double pressision (64 bit float)
 	_, err := Self.Exec(create)
 	return err
 }
