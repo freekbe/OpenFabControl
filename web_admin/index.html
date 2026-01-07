@@ -14,18 +14,18 @@
         >
 
     </head>
-    <body>
-        <hero class="flex items-center justify-center bg-blue-500 text-white p-4">
+    <body class="flex flex-col items-center">
+        <hero class="flex items-center justify-center bg-blue-500 text-white p-4 w-full">
             <h1 class="text-3xl">Admin page - manage device</h1>
         </hero>
 
         <!--manage machine controlers-->
-        <section class="flex flex-row h-96 w-full gap-4 p-4">
-            <card id="machine_controlers_to_approve" class="flex flex-col items-center border-gray-300 border-2 flex-1 w-full h-full rounded-2xl p-4 gap-4 overflow-scroll">
+        <section class="flex flex-col h-96 w-full max-w-4xl h-fit gap-4 p-4">
+            <card id="machine_controlers_to_approve" class="flex flex-col items-center border-gray-300 border-2 flex-1 w-full h-fit rounded-2xl p-4 gap-4">
                 <!-- Dynamic content will be loaded here -->
             </card>
 
-            <card id="machine_controlers_approved" class="flex flex-col items-center border-gray-300 border-2 flex-1 w-full h-full rounded-2xl p-4 gap-4 overflow-scroll">
+            <card id="machine_controlers_approved" class="flex flex-col items-center border-gray-300 border-2 flex-1 w-full h-fit rounded-2xl p-4 gap-4">
                 <!-- Dynamic content will be loaded here -->
             </card>
         </section>

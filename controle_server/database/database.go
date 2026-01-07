@@ -68,6 +68,7 @@ func ensureTable() error {
 	create := `CREATE TABLE IF NOT EXISTS machine_controller (
 		id SERIAL PRIMARY KEY,
 		uuid TEXT UNIQUE NOT NULL,
+		type TEXT NOT NULL,
 		zone TEXT NOT NULL,
 		name TEXT NOT NULL,
 		manual TEXT NOT NULL,

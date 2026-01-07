@@ -143,6 +143,16 @@ async function machine_controlers_list(approved) {
         element.querySelector('.name').innerText = mc.name;
         element.querySelector('.uuid').innerText = mc.uuid;
         element.querySelector('.delete').addEventListener('click', () => { delete_machine_controler(mc.uuid, element) })
+
+        // set machine controller logo
+        switch (mc.type) {
+          case "fm-bv2":
+            element.querySelector('.machine_controler_logo').src = "assets/fm-bv2.svg";
+            break;
+          default:
+            element.querySelector('.machine_controler_logo').src = "assets/question-mark-icon.svg";
+            break;
+        }
       });
     }
   });

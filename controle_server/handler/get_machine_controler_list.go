@@ -35,6 +35,7 @@ func get_machine_controler(w http.ResponseWriter, r *http.Request, approved bool
 		var controller model.Machine_controller
 		if err := rows.Scan(&controller.ID,
 							&controller.UUID,
+							&controller.TYPE,
 							&controller.ZONE,
 							&controller.NAME,
 							&controller.MANUAL,

@@ -7,6 +7,7 @@ import (
 type Machine_controller struct {
 	ID						int			`json:"id"`
 	UUID 					string		`json:"uuid"`
+	TYPE					string		`json:"type"`
 	ZONE 					string		`json:"zone"`
 	NAME 					string		`json:"name"`
 	MANUAL					string		`json:"manual"`
