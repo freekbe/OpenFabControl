@@ -65,6 +65,7 @@ func connectWithRetries(dsn string, maxRetries int, delay time.Duration) (*sql.D
 }
 
 func ensureTable() error {
+	// create machine controler table
 	create := `CREATE TABLE IF NOT EXISTS machine_controller (
 		id SERIAL PRIMARY KEY,
 		uuid TEXT UNIQUE NOT NULL,
@@ -78,5 +79,45 @@ func ensureTable() error {
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);` // FLOAT is synonym to double pressision (64 bit float)
 	_, err := Self.Exec(create)
-	return err
+	if err != nil { return err }
+
+	// create the roles table
+	create = `CREATE TABLE IF NOT EXISTS roles (
+		id SERIAL PRIMARY KEY,
+		privilege_lvl INTEGER,
+		name TEXT
+	);`
+	_, err = Self.Exec(create)
+	if err != nil { return err }
+
+	// create users table
+	create = `CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		access_key TEXT NOT NULL,
+		username TEXT NOT NULL,
+		password TEXT NOT NULL,
+		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+	);`
+	_, err = Self.Exec(create)
+	if err != nil { return err }
+
+	// create user_roles junction table
+	create = `CREATE TABLE IF NOT EXISTS user_roles (
+		user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+		role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
+		PRIMARY KEY (user_id, role_id)
+	);`
+	_, err = Self.Exec(create)
+	if err != nil { return err }
+
+	// create user_machines junction table
+	create = `CREATE TABLE IF NOT EXISTS user_machines (
+		user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+		machine_id INTEGER REFERENCES machine_controller(id) ON DELETE CASCADE,
+		PRIMARY KEY (user_id, machine_id)
+	);`
+	_, err = Self.Exec(create)
+	if err != nil { return err }
+
+	return nil
 }
