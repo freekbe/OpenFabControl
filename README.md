@@ -15,13 +15,18 @@ FabLabs and makerspaces are vital hubs for innovation, but managing them can be 
 * **Customizable:** Designed to be adaptable to the unique needs of any FabLab or makerspace.
 * **Cost-Effective:** Eliminates licensing fees and promotes resource optimization.
 
-## Getting Involved - Contribute to Open Fab Control!
+## What to contribute on ? (in that order)
+- Make test battery for the API
+- Documentation
+- Web dev 
+
+## How to contribute ?
 
 We welcome contributions from anyone! Here is how to help:
 
 1. **Fork the Repository:**  Click the "Fork" button at the top right of this page to create your own copy of the repository.
 
-2. **Create a Branch:**  Create a new branch in your forked repository for your specific feature or bug fix.  Use a descriptive branch name (e.g., `V1/feature/equipment-tracking`, `V1/bugfix/booking-conflict`).
+2. **Create a Branch:**  Create a new branch in your forked repository for your specific feature or bug fix.  Use a descriptive branch name (e.g., `V1/feature/booking`, `V1/bugfix/booking-conflict`).
 
 3. **Make Your Changes:**  Write your code, add tests (very important!), and document your work.
 
