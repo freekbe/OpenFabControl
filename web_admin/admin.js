@@ -103,7 +103,7 @@ function createElementFromString(htmlString) {
 }
 
 function accept_new_controler(uuid, element) {
-  post_json_api({ "uuid": uuid }, '/web-api/ofc_admin/approve_machine_controler').then(data => {
+  post_json_api({ "uuid": uuid }, '/web-admin-api/approve_machine_controler').then(data => {
     if (data.ok) {
       document.getElementById('machine_controlers_to_approve').removeChild(element);
       element.querySelector('.accept').classList.add("hidden");
@@ -112,7 +112,7 @@ function accept_new_controler(uuid, element) {
   });
 }
 function delete_machine_controler(uuid, element) {
-  del_json_api({"uuid": uuid}, '/web-api/ofc_admin/delete_machine_controler').then (data => {
+  del_json_api({"uuid": uuid}, '/web-admin-api/delete_machine_controler').then (data => {
     if (data.ok) {
         element.remove();
     }
@@ -122,8 +122,8 @@ function delete_machine_controler(uuid, element) {
 // get the list of machine controlers (approved or not)
 async function machine_controlers_list(approved) {
 
-  if (approved == true) { route = '/web-api/ofc_admin/get_machine_controler_list_approved'}
-  else                  { route = '/web-api/ofc_admin/get_machine_controler_list_to_approve' }
+  if (approved == true) { route = '/web-admin-api/ofc_admin/get_machine_controler_list_approved'}
+  else                  { route = '/web-admin-api/ofc_admin/get_machine_controler_list_to_approve' }
 
   get_api(route).then(data => {
     if (!data.ok) { return; }
