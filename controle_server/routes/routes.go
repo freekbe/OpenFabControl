@@ -18,6 +18,7 @@ func Setup_routes() {
 	http.HandleFunc("/web-admin-api/get_machine_controler_list_approved",		handler.Get_machine_controler_list_approved)
 	http.HandleFunc("/web-admin-api/approve_machine_controler",					handler.Approve_machine_controler)
 	http.HandleFunc("/web-admin-api/delete_machine_controler",					handler.Delete_machine_controler)
+	http.HandleFunc("/web-admin-api/edit_machine_controler",					handler.Edit_machine_controler)
 	// other
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "controle server working")
