@@ -20,7 +20,7 @@ func Delete_machine_controler(w http.ResponseWriter, r *http.Request) {
 
 	// validate payload data
 	if payload.UUID == "" {
-		http.Error(w, "invalid json", http.StatusBadRequest)
+		http.Error(w, "invalid payload: UUID cannot be empty", http.StatusBadRequest)
 		return
 	}
 

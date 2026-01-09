@@ -94,8 +94,10 @@ func ensureTable() error {
 	create = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		access_key TEXT NOT NULL,
-		username TEXT NOT NULL,
+		email TEXT UNIQUE NOT NULL,
 		password TEXT NOT NULL,
+		verification_code TEXT,
+		status VARCHAR(16) DEFAULT 'pending',
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);`
 	_, err = Self.Exec(create)

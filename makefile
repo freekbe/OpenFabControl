@@ -25,3 +25,6 @@ start_colima:
 
 set_context:
 	docker context use colima
+
+reset_db: down
+	docker volume rm openfabcontrol_pgdata

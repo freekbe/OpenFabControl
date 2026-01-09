@@ -38,6 +38,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	query := `INSERT INTO machine_controller (uuid, type, zone, name, manual, price_booking_in_eur, price_usage_in_eur, approved) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	ON CONFLICT (uuid) DO NOTHING`
 
+	// code to refactor to have more linear error handling (like create_user.go)
+
 	// Check if UUID already exists
 	var existingUUID string
 	err := database.Self.QueryRow(`SELECT uuid FROM machine_controller WHERE uuid = $1`, payload.UUID).Scan(&existingUUID)
