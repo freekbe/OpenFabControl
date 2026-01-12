@@ -94,9 +94,14 @@ func ensureTable() error {
 	create = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		access_key TEXT NOT NULL,
-		email TEXT UNIQUE NOT NULL,
-		password TEXT NOT NULL,
-		verification_code TEXT,
+		email VARCHAR(255) UNIQUE NOT NULL,
+		password VARCHAR(255),
+		first_name VARCHAR(64),
+		last_name VARCHAR(64),
+		tva VARCHAR(16),
+		facturation_address VARCHAR(255),
+		account VARCHAR(34),
+		verification_code VARCHAR(32) NOT NULL,
 		status VARCHAR(16) DEFAULT 'pending',
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);`

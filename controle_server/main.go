@@ -24,7 +24,6 @@ func main() {
 
 	routes.Setup_routes()
 	runHttpServer()
-	return
 }
 
 func runHttpServer() {

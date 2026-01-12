@@ -1,5 +1,5 @@
 echo To approve
-curl -k -X GET https://localhost:3000/web-admin-api/get_machine_controler_list_to_approve
+curl -k -H "Authorization: Bearer JWT_TOKEN_HERE" -X GET https://localhost:3000/web-admin-api/get_machine_controler_list_to_approve
 
 echo
 echo

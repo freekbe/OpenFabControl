@@ -10,18 +10,23 @@ POST    /web-admin-api/approve_machine_controler                  // Aprove a ma
 DELETE  /web-admin-api/delete_machine_controler                   // Delete a machine controler
 POST    /web-admin-api/edit_machine_controler                     // Edit the infos of a machine controler
 ## users
+POST    /web-admin-api/create_user                                // Create a users (the send mail dont work)
 ## roles
+
+# API access from user page
+## users
+POST    /web-user-api/user_one_time_setup                        // Setup a user (username, password, ect), work only once (after creation)
+POST    /web-user-api/login                                      // login trought credentials, return a JWT token
 
 
 
 
 # todo
 ## users
-POST    /web-admin-api/create_user                                // Create a users
+POST    /web-user-api/me                                          // return profile info
 DELETE  /web-admin-api/delete_user                                // Delete a users
 POST    /web-admin-api/update_user                                // Update a users
 GET     /web-admin-api/get_user_list                              // Return all the users (should be 50 by 50 or something of that kind to be more optimized)
-POST    /web-admin-api/login                                      // login trought credentials, return a JWT token
 POST    /web-admin-api/logout                                     // logout the logged in user
 POST    /web-admin-api/activate                                   // acctivate an account
 POST    /web-admin-api/desactivate                                // desactivate an account
