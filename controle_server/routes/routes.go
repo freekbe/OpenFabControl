@@ -35,6 +35,8 @@ func Setup_routes() {
 	// http.HandleFunc("/web-admin-api/delete_user", 							handler.Delete_user)
 	// http.HandleFunc("/web-admin-api/update_user",	 						handler.Update_user)
 	// http.HandleFunc("/web-admin-api/get_user_list",	 						handler.Get_user_list)
+	http.HandleFunc("/web-admin-api/desactivate_user",	 						handler.Desactivate_user)
+	http.HandleFunc("/web-admin-api/reactivate_user",	 						handler.Reactivate_user)
 	// roles
 
 	///////////////////////

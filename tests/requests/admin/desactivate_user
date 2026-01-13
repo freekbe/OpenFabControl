@@ -1,0 +1,1 @@
+curl -k -X POST -d '{"user_id":1}' https://localhost:3000/web-admin-api/desactivate_user
