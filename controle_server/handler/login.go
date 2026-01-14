@@ -3,8 +3,8 @@ package handler
 import (
 	"OpenFabControl/database"
 	"OpenFabControl/model"
+	"OpenFabControl/utils"
 	"database/sql"
-	"encoding/json"
 	"net/http"
 	"os"
 	"time"
@@ -12,6 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// route to login (when account is acctivated)
 func Login(w http.ResponseWriter, r* http.Request) {
 
 	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
@@ -32,7 +33,7 @@ func Login(w http.ResponseWriter, r* http.Request) {
 	err := database.Self.QueryRow(`SELECT password, id, status FROM users WHERE email = $1`, payload.EMAIL).Scan(&hash, &user_id, &status)
 	if err != nil {
 		if err == sql.ErrNoRows{
-			http.Error(w, "Invalid credential", http.StatusForbidden)
+			utils.Respond_error(w, "Invalid credential", http.StatusForbidden)
 			return
 		} else {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -41,7 +42,7 @@ func Login(w http.ResponseWriter, r* http.Request) {
 	}
 
 	if !checkPasswordHash(payload.PASSWORD, hash) {
-		http.Error(w, "Invalid credential", http.StatusForbidden)
+		utils.Respond_error(w, "Invalid credential", http.StatusForbidden)
 		return
 	}
 
@@ -60,11 +61,12 @@ func Login(w http.ResponseWriter, r* http.Request) {
 	secretKey := []byte(os.Getenv("JWT_TOKEN"))
     tokenString, err := token.SignedString(secretKey)
     if err != nil {
-        http.Error(w, "Error generating token", http.StatusInternalServerError)
+        utils.Respond_error(w, "Error generating token", http.StatusInternalServerError)
         return
     }
 
-    w.WriteHeader(http.StatusOK)
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]interface{}{"token": tokenString})
+    utils.Respond_json(w, map[string]any{
+    	"msg"	: "logged in successfully",
+     	"token"	: tokenString,
+    }, http.StatusOK)
 }

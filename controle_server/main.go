@@ -26,6 +26,7 @@ func main() {
 	runHttpServer()
 }
 
+// function that run the http server
 func runHttpServer() {
 	// check for TLS certs
 	if _, errCert := os.Stat("cert.pem"); errCert == nil {

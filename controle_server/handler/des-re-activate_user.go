@@ -3,12 +3,14 @@ package handler
 import (
 	"OpenFabControl/database"
 	"OpenFabControl/utils"
-	"encoding/json"
 	"net/http"
 )
 
-func Reactivate_user (w http.ResponseWriter, r *http.Request) 	{ user_status(w, r, "activated"); }
+// desactivate a user (he cannot do anything while desactivated)
 func Desactivate_user(w http.ResponseWriter, r *http.Request)	{ user_status(w, r, "desactivated"); }
+
+// reactivate a user that has been desactivated
+func Reactivate_user (w http.ResponseWriter, r *http.Request) 	{ user_status(w, r, "activated"); }
 
 // only exept new_status to be activated or desactivated (undefined behavior else)
 func user_status(w http.ResponseWriter, r *http.Request, new_status string) {
@@ -18,13 +20,13 @@ func user_status(w http.ResponseWriter, r *http.Request, new_status string) {
 		USERID	int `json:"user_id"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return; }
+	if extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.USERID == 0, "user_id can't be empty", w) { return }
+	if !validate_payload(payload.USERID == 0, "user_id cannot be empty", w) { return }
 
 	// check status != pending
 	if utils.Reject_user_status(w, payload.USERID, []string{"pending"}) != nil {
-		http.Error(w, "Cannot desactivate/force-activate an account pending user activation", http.StatusBadRequest)
+		utils.Respond_error(w, "Cannot desactivate/force-activate an account pending user activation", http.StatusBadRequest)
 		return
 	}
 
@@ -32,12 +34,12 @@ func user_status(w http.ResponseWriter, r *http.Request, new_status string) {
 	query := `UPDATE users SET status = $1 WHERE id = $2`
 	_, err := database.Self.Exec(query, new_status, payload.USERID)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		utils.Respond_error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"msg": "user successfully " + new_status})
+	utils.Respond_json(w, map[string]any{
+		"msg": "user successfully " + new_status,
+	}, http.StatusOK)
 
 }

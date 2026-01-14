@@ -2,14 +2,16 @@ package handler
 
 import (
 	"OpenFabControl/database"
+	"OpenFabControl/utils"
 	"fmt"
 	"net/http"
 )
 
+// route to edit a machine controler
 func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil {
-		return
-	}
+
+	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
+
 	var payload struct {
 		UUID			string `json:"uuid"`
 		ZONE			string `json:"zone"`
@@ -19,14 +21,9 @@ func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
 		PRICE_USAGE 	string `json:"price_usage_in_eur"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil {
-		return
-	}
+	if extract_payload_data(r, w, &payload) != nil { return }
 
-	if payload.UUID == "" {
-		http.Error(w, "invalid json", http.StatusBadRequest)
-		return
-	}
+	if !validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
 
 	// construct the SET close of the querry
 	set_close := ""
@@ -43,7 +40,7 @@ func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
 	if payload.PRICE_USAGE		!= "" { set_close += fmt.Sprint(comma(i), "price_usage_in_eur = $", i); i++ }
 
 	if (set_close == "") {
-		http.Error(w, "invalid json: no data to update send", http.StatusBadRequest)
+		utils.Respond_error(w, "invalid json: no data to update send", http.StatusBadRequest)
 		return
 	}
 	// build the querry
@@ -60,13 +57,15 @@ func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
 
 	result, err := database.Self.Exec(query, params...)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		utils.Respond_error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	if rows_affected, _ := result.RowsAffected(); rows_affected == 0 {
-		http.Error(w, "No device with this UUID registered", http.StatusNotFound)
+		utils.Respond_error(w, "No device with this UUID registered", http.StatusNotFound)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "Machine controler edited successfully")
+
+	utils.Respond_json(w, map[string]any{
+		"msg" : "Machine controler edited successfully",
+	}, http.StatusOK)
 }

@@ -1,19 +1,23 @@
 package handler
 
 import (
-	"net/http"
-	"encoding/json"
-	"database/sql"
-	"log"
-
 	"OpenFabControl/database"
 	"OpenFabControl/model"
+	"OpenFabControl/utils"
+	"database/sql"
+	"encoding/json"
+	"net/http"
 )
 
+// route to get the machine controlers that are part of the network
 func Get_machine_controler_list_approved(w http.ResponseWriter, r *http.Request)	{ get_machine_controler(w,r,true)  }
+
+// route to get the machine controlers that await to be validated or not in the system
 func Get_machine_controler_list_to_approve(w http.ResponseWriter, r *http.Request)	{ get_machine_controler(w,r,false) }
 
+// func for the 2 wraper just over
 func get_machine_controler(w http.ResponseWriter, r *http.Request, approved bool) {
+
 	reject_all_methode_exept(r, w, http.MethodGet)
 
 	// get the controllers
@@ -43,21 +47,17 @@ func get_machine_controler(w http.ResponseWriter, r *http.Request, approved bool
 							&controller.PRICE_USAGE_IN_EUR,
 							&controller.Approved,
 							&controller.CreatedAt); err != nil {
-			log.Printf("Error scanning row: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			utils.Respond_error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 		controllers = append(controllers, controller)
 	}
 
-	// headers
+	// send data
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content_Type", "application/json")
-
-	// send data
 	if err := json.NewEncoder(w).Encode(controllers); err != nil {
-		log.Printf("Error encoding JSON: %v", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 }

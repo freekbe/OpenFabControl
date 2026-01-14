@@ -2,19 +2,18 @@ package handler
 
 import (
 	"OpenFabControl/database"
+	"OpenFabControl/utils"
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"log"
+	"math/rand"
 	"net/http"
 	"net/smtp"
-	"strings"
-	"math/rand"
-	"time"
 	"os"
+	"strings"
+	"time"
 )
 
-
+// use smtp server to send email
 func sendConfirmationEmail(recipientEmail string, verificationLink string) error {
 	// SMTP Credentials (from .env)
 	smtpHost := os.Getenv("SMTP_HOST")
@@ -49,101 +48,69 @@ Thank you!
 	// Connect to the SMTP server
 	addr := smtpHost + ":" + smtpPort
 	conn, err := smtp.Dial(addr)
-	if err != nil {
-		log.Printf("Error connecting to SMTP server: %v", err)
-		return err
-	}
+	if err != nil { return err }
 	defer conn.Close()
 
 	// Authenticate
-	if err := conn.Auth(auth); err != nil {
-		log.Printf("Error authenticating: %v", err)
-		return err
-	}
+	if err := conn.Auth(auth); err != nil { return err }
 
 	// Set the sender and recipient
-	if err := conn.Mail(from); err != nil {
-		log.Printf("Error setting sender: %v", err)
-		return err
-	}
+	if err := conn.Mail(from); err != nil { return err }
 	for _, recipient := range to {
 		if err := conn.Rcpt(recipient); err != nil {
-			log.Printf("Error setting recipient: %v", err)
 			return err
 		}
 	}
 
 	// Send the email body
 	w, err := conn.Data()
-	if err != nil {
-		log.Printf("Error creating data writer: %v", err)
-		return err
-	}
+	if err != nil { return err }
 
 	_, err = w.Write([]byte(message))
-	if err != nil {
-		log.Printf("Error writing message: %v", err)
-		return err
-	}
+	if err != nil { return err }
 
 	err = w.Close()
-	if err != nil {
-		log.Printf("Error closing writer: %v", err)
-		return err
-	}
+	if err != nil { return err }
+
 
 	// Close the connection
 	err = conn.Quit()
-	if err != nil {
-		log.Printf("Error quitting connection: %v", err)
-		return err
-	}
+	if err != nil { return err }
 
-	fmt.Println("Email sent successfully!")
+
 	return nil
 }
 
-
-
+// route to create a new User (and send an email to the user then so he can complete the account)
 func Create_user(w http.ResponseWriter, r* http.Request) {
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil {
-		return
-	}
+	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		ACCESS_KEY	string `json:"access_key"`
 		EMAIL		string `json:"email"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil {
-		return
-	}
+	if extract_payload_data(r, w, &payload) != nil { return }
 
-	if payload.ACCESS_KEY == "" {
-		http.Error(w, "invalid payload: access key cannot be empty", http.StatusBadRequest)
-		return
-	}
-	if payload.EMAIL == "" {
-		http.Error(w, "invalid payload: email cannot be empty", http.StatusBadRequest)
-		return
-	}
+	if !validate_payload(payload.ACCESS_KEY == "",	"access_key cannot be empty", w) 	{ return }
+	if !validate_payload(payload.EMAIL == "", 		"email cannot be empty", w) 		{ return }
 
 	// check if email already registered
 	var existing_email string
 	err := database.Self.QueryRow(`SELECT email FROM users WHERE email = $1`, payload.EMAIL).Scan(&existing_email)
 	if err == nil {
-		http.Error(w, "Email already registered", http.StatusBadRequest)
+		utils.Respond_error(w, "Email already registered", http.StatusBadRequest)
 		return
 	} else if err != sql.ErrNoRows {
-		log.Printf("db query error: %v", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
 	// generate the verif code
 	seeder := 0
 	p_seeder := &seeder
-	rand.Seed(int64(*p_seeder)) // use the address of the int as seed (yeah I know what you think, answer: why not)
+	// use the address of the int as seed (yeah I know what you think, answer: why not)
+	rand.Seed(int64(*p_seeder))
  	randomNum := rand.Intn(999999)
 	verif_code := fmt.Sprintf("%v-%v", time.Now().UnixMilli(), randomNum)
 
@@ -151,18 +118,18 @@ func Create_user(w http.ResponseWriter, r* http.Request) {
 	query := `INSERT INTO users (access_key, email, password, verification_code) VALUES ($1, $2, $3, $4) ON CONFLICT (email) DO NOTHING`
 	_, err = database.Self.Exec(query, payload.ACCESS_KEY, payload.EMAIL, "UNDEFINED", verif_code)
 	if err != nil {
-		log.Printf("db insert error: %v", err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
 
 	// send email to create password
 	// if err = sendConfirmationEmail(payload.EMAIL, os.Getenv("DOMAIN_NAME") + "/confirm-email?code=" + verif_code); err != nil {
-	// 	http.Error(w, fmt.Sprintf("Error sending the email: %v", err), http.StatusInternalServerError)
+	// utils.Respond_error(w, fmt.Sprintf("Error sending the email: %v", err), http.StatusInternalServerError)
 	// }
 
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "application/json")
-	// do NOT leave the confirm link here
-	json.NewEncoder(w).Encode(map[string]any{"msg": "user created, email sent", "link_sent": os.Getenv("DOMAIN_NAME") + "/confirm-email?code=" + verif_code})
+	// do NOT leave the confirm link here (test purpose only)
+	utils.Respond_json(w, map[string]any{
+		"msg": "user created, email sent",
+		"link_sent": os.Getenv("DOMAIN_NAME") + "/confirm-email?code=" + verif_code,
+	}, http.StatusCreated)
 }

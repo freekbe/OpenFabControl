@@ -24,7 +24,7 @@ func Setup_routes() {
 	// TODO : admin pages have to be protected (not done for the moment for dev purpose)
 
 	// machine controlers
-	http.HandleFunc("/web-admin-api/get_machine_controler_list_to_approve",		auth_middleware(handler.Get_machine_controler_list_to_approve))
+	http.HandleFunc("/web-admin-api/get_machine_controler_list_to_approve",		handler.Get_machine_controler_list_to_approve)
 	http.HandleFunc("/web-admin-api/get_machine_controler_list_approved",		handler.Get_machine_controler_list_approved)
 	http.HandleFunc("/web-admin-api/approve_machine_controler",					handler.Approve_machine_controler)
 	http.HandleFunc("/web-admin-api/delete_machine_controler",					handler.Delete_machine_controler)

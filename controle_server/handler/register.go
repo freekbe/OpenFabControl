@@ -1,16 +1,15 @@
 package handler
 
 import (
-	"net/http"
-	"encoding/json"
-	"database/sql"
-	"log"
-
 	"OpenFabControl/database"
+	"OpenFabControl/utils"
+	"database/sql"
+	"net/http"
 )
 
-// register a new machine controler
+// route register a new machine controler
 func Register(w http.ResponseWriter, r *http.Request) {
+
 	reject_all_methode_exept(r, w, http.MethodPost)
 
 	var payload struct {
@@ -20,51 +19,47 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// extract payload data
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		http.Error(w, "invalid json", http.StatusBadRequest)
-		return
-	}
+	if extract_payload_data(r, w, &payload) != nil { return }
 
 	// validate payload data
-	if payload.UUID == "" || payload.NAME == "" {
-		http.Error(w, "invalid payload: UUID && NAME can't be null", http.StatusBadRequest)
-		return
-	}
 	if payload.TYPE != "fm-bv2" { // && payload.TYPE != "ofmc" && payload.TYPE != "toolsquare" // (future suport)
-		http.Error(w, "invalid payload: unknown or unsuported machine type. Curently supported: fm-bv2", http.StatusBadRequest)
+		utils.Respond_error(w, "invalid payload: ", http.StatusBadRequest)
 		return
 	}
+	if !validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
+	if !validate_payload(payload.NAME == "", "name cannot be empty", w) { return }
+	if !validate_payload(
+		payload.TYPE != "fm-bv2", // && payload.TYPE != "ofmc" && payload.TYPE != "toolsquare" // (future suport)
+		"unknown or unsuported machine type. Curently supported: 'fm-bv2'. You use '" + payload.TYPE + "'. Is the server up to date ?",
+		w,
+	) { return }
 
 	query := `INSERT INTO machine_controller (uuid, type, zone, name, manual, price_booking_in_eur, price_usage_in_eur, approved) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	ON CONFLICT (uuid) DO NOTHING`
 
-	// code to refactor to have more linear error handling (like create_user.go)
-
 	// Check if UUID already exists
 	var existingUUID string
 	err := database.Self.QueryRow(`SELECT uuid FROM machine_controller WHERE uuid = $1`, payload.UUID).Scan(&existingUUID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// UUID doesn't exist, proceed with insertion
-			_, err := database.Self.Exec(query, payload.UUID, payload.TYPE, "UNDEFINED", payload.NAME, "UNDEFINED", 0, 0, false)
-			if err != nil {
-				log.Printf("db insert error: %v", err)
-				http.Error(w, "internal server error", http.StatusInternalServerError)
-				return
-			}
-			w.WriteHeader(http.StatusCreated)
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]any{"msg": "registration saved", "uuid": payload.UUID, "name": payload.NAME})
-			return
-		} else {
-			// Other database error
-			log.Printf("db query error: %v", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
-			return
-		}
-	} else {
+	if err == nil {
 		// UUID already exists
-		http.Error(w, "UUID already registered", http.StatusBadRequest)
+		utils.Respond_error(w, "UUID already registered", http.StatusBadRequest)
 		return
 	}
+	if err != sql.ErrNoRows {
+		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	// UUID doesn't exist, proceed with insertion
+	_, err = database.Self.Exec(query, payload.UUID, payload.TYPE, "UNDEFINED", payload.NAME, "UNDEFINED", 0, 0, false)
+	if err != nil {
+		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	utils.Respond_json(w, map[string]any{
+		"msg"	: "registration saved",
+		"uuid"	: payload.UUID,
+		"name"	: payload.NAME,
+	}, http.StatusCreated)
 }
