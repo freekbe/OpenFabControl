@@ -1,4 +1,4 @@
-package handler
+package machine_controler_handler
 
 import (
 	"OpenFabControl/database"
@@ -10,7 +10,7 @@ import (
 // route to edit a machine controler
 func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
 
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		UUID			string `json:"uuid"`
@@ -21,9 +21,9 @@ func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
 		PRICE_USAGE 	string `json:"price_usage_in_eur"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
 
 	// construct the SET close of the querry
 	set_close := ""

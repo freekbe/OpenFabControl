@@ -1,4 +1,4 @@
-package handler
+package user_handler
 
 import (
 	"OpenFabControl/database"
@@ -9,7 +9,7 @@ import (
 // route to confirm the account creation and fill all the data
 func User_one_time_setup(w http.ResponseWriter, r* http.Request) {
 
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		VERIF_CODE		string `json:"verification_code"`
@@ -21,7 +21,7 @@ func User_one_time_setup(w http.ResponseWriter, r* http.Request) {
 		ACCOUNT			string `json:"account"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
 	// payload checks
 	if payload.VERIF_CODE == "" 	{ utils.Respond_error(w, "invalid payload: verification_code cannot be empty", 	http.StatusBadRequest); return }
@@ -43,7 +43,7 @@ func User_one_time_setup(w http.ResponseWriter, r* http.Request) {
 	}
 
 	// set information in db
-	hashed_password, err := hashPassword(payload.PASSWORD);
+	hashed_password, err := utils.HashPassword(payload.PASSWORD);
 	if err != nil {
 		utils.Respond_error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

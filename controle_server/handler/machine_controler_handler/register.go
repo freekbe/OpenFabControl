@@ -1,4 +1,4 @@
-package handler
+package machine_controler_handler
 
 import (
 	"OpenFabControl/database"
@@ -10,7 +10,7 @@ import (
 // route register a new machine controler
 func Register(w http.ResponseWriter, r *http.Request) {
 
-	reject_all_methode_exept(r, w, http.MethodPost)
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		UUID    string `json:"uuid"`
@@ -19,16 +19,16 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// extract payload data
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
 	// validate payload data
 	if payload.TYPE != "fm-bv2" { // && payload.TYPE != "ofmc" && payload.TYPE != "toolsquare" // (future suport)
 		utils.Respond_error(w, "invalid payload: ", http.StatusBadRequest)
 		return
 	}
-	if !validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
-	if !validate_payload(payload.NAME == "", "name cannot be empty", w) { return }
-	if !validate_payload(
+	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.NAME == "", "name cannot be empty", w) { return }
+	if !utils.Validate_payload(
 		payload.TYPE != "fm-bv2", // && payload.TYPE != "ofmc" && payload.TYPE != "toolsquare" // (future suport)
 		"unknown or unsuported machine type. Curently supported: 'fm-bv2'. You use '" + payload.TYPE + "'. Is the server up to date ?",
 		w,

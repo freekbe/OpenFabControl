@@ -1,4 +1,4 @@
-package handler
+package user_handler
 
 import (
 	"OpenFabControl/database"
@@ -83,17 +83,17 @@ Thank you!
 
 // route to create a new User (and send an email to the user then so he can complete the account)
 func Create_user(w http.ResponseWriter, r* http.Request) {
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		ACCESS_KEY	string `json:"access_key"`
 		EMAIL		string `json:"email"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.ACCESS_KEY == "",	"access_key cannot be empty", w) 	{ return }
-	if !validate_payload(payload.EMAIL == "", 		"email cannot be empty", w) 		{ return }
+	if !utils.Validate_payload(payload.ACCESS_KEY == "",	"access_key cannot be empty", w) 	{ return }
+	if !utils.Validate_payload(payload.EMAIL == "", 		"email cannot be empty", w) 		{ return }
 
 	// check if email already registered
 	var existing_email string

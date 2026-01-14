@@ -1,4 +1,4 @@
-package handler
+package machine_controler_handler
 
 import (
 	"OpenFabControl/database"
@@ -9,15 +9,15 @@ import (
 // Route to approve a machine controler in the system
 func Approve_machine_controler(w http.ResponseWriter, r *http.Request) {
 
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		UUID     string `json:"uuid"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
 
 	// Set approved to true in the db
 	query := "UPDATE machine_controller SET approved = TRUE WHERE uuid = $1"

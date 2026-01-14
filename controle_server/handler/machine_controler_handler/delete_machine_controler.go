@@ -1,4 +1,4 @@
-package handler
+package machine_controler_handler
 
 import (
 	"OpenFabControl/database"
@@ -8,15 +8,16 @@ import (
 
 // route to delete a machine controler from the system
 func Delete_machine_controler(w http.ResponseWriter, r *http.Request) {
-	if reject_all_methode_exept(r, w, http.MethodDelete) != nil { return }
+
+	if utils.Reject_all_methode_exept(r, w, http.MethodDelete) != nil { return }
 
 	var payload struct {
 		UUID     string `json:"uuid"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.UUID == "", "UUID cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.UUID == "", "UUID cannot be empty", w) { return }
 
 	query := "DELETE FROM machine_controller WHERE uuid = $1"
 	result, err := database.Self.Exec(query, payload.UUID)

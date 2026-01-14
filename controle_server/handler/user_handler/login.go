@@ -1,4 +1,4 @@
-package handler
+package user_handler
 
 import (
 	"OpenFabControl/database"
@@ -15,17 +15,17 @@ import (
 // route to login (when account is acctivated)
 func Login(w http.ResponseWriter, r* http.Request) {
 
-	if reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
 
 	var payload struct {
 		EMAIL string `json:"email"`
 		PASSWORD string `json:"password"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.EMAIL == "", "email cannot be empty", w) { return }
-	if !validate_payload(payload.PASSWORD == "", "password cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.EMAIL == "", "email cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.PASSWORD == "", "password cannot be empty", w) { return }
 
 	// check password
 	var hash, status string;
@@ -41,7 +41,7 @@ func Login(w http.ResponseWriter, r* http.Request) {
 		}
 	}
 
-	if !checkPasswordHash(payload.PASSWORD, hash) {
+	if !utils.CheckPasswordHash(payload.PASSWORD, hash) {
 		utils.Respond_error(w, "Invalid credential", http.StatusForbidden)
 		return
 	}

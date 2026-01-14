@@ -1,4 +1,4 @@
-package handler
+package user_handler
 
 import (
 	"OpenFabControl/database"
@@ -14,15 +14,15 @@ func Reactivate_user (w http.ResponseWriter, r *http.Request) 	{ user_status(w, 
 
 // only exept new_status to be activated or desactivated (undefined behavior else)
 func user_status(w http.ResponseWriter, r *http.Request, new_status string) {
-	reject_all_methode_exept(r, w, http.MethodPost);
+	utils.Reject_all_methode_exept(r, w, http.MethodPost);
 
 	var payload struct {
 		USERID	int `json:"user_id"`
 	}
 
-	if extract_payload_data(r, w, &payload) != nil { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
 
-	if !validate_payload(payload.USERID == 0, "user_id cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.USERID == 0, "user_id cannot be empty", w) { return }
 
 	// check status != pending
 	if utils.Reject_user_status(w, payload.USERID, []string{"pending"}) != nil {

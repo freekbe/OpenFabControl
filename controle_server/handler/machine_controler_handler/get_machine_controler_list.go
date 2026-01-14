@@ -1,4 +1,4 @@
-package handler
+package machine_controler_handler
 
 import (
 	"OpenFabControl/database"
@@ -18,7 +18,7 @@ func Get_machine_controler_list_to_approve(w http.ResponseWriter, r *http.Reques
 // func for the 2 wraper just over
 func get_machine_controler(w http.ResponseWriter, r *http.Request, approved bool) {
 
-	reject_all_methode_exept(r, w, http.MethodGet)
+	if utils.Reject_all_methode_exept(r, w, http.MethodGet) != nil { return }
 
 	// get the controllers
 	query := ""

@@ -2,8 +2,8 @@ package utils
 
 import (
 	"OpenFabControl/database"
+	"golang.org/x/crypto/bcrypt"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"net/http"
 )
@@ -29,16 +29,14 @@ func Reject_user_status(w http.ResponseWriter, id int, status_to_check_list []st
 	return nil
 }
 
-// return the error as a json in the folowing format : { "err" : [error msg] }
-func Respond_error(w http.ResponseWriter, msg string, status_code int) {
-	w.WriteHeader(status_code)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"error": msg})
+// helper that hash password using bcrypt
+func HashPassword(password string) (string, error) {
+    bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+    return string(bytes), err
 }
 
-// return the success as a json, necesary key pair: "msg" : "..."
-func Respond_json(w http.ResponseWriter, json_map map[string]any, status_code int) {
-	w.WriteHeader(status_code)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(json_map)
+// helper that compare password with hash
+func CheckPasswordHash(password, hash string) bool {
+    err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+    return err == nil
 }
