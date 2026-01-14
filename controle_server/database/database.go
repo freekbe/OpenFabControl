@@ -84,8 +84,7 @@ func ensureTable() error {
 	// create the roles table
 	create = `CREATE TABLE IF NOT EXISTS roles (
 		id SERIAL PRIMARY KEY,
-		privilege_lvl INTEGER,
-		name TEXT
+		name VARCHAR(32) UNIQUE
 	);`
 	_, err = Self.Exec(create)
 	if err != nil { return err }
