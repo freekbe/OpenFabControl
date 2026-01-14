@@ -2,9 +2,11 @@ package routes
 
 import (
 	"OpenFabControl/model"
-	"net/http"
+	"OpenFabControl/utils"
 	"context"
+	"net/http"
 	"os"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -29,6 +31,10 @@ func auth_middleware(next http.HandlerFunc) http.HandlerFunc {
 		})
 		if err != nil || !token.Valid {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
+			return
+		}
+		if utils.Reject_user_status(w, claims.USERID, []string{"pending", "desactivated"}) != nil {
+			http.Error(w, "Your account is desactivated or pending activation, if you're part of the system, contact the administrator", http.StatusUnauthorized)
 			return
 		}
 

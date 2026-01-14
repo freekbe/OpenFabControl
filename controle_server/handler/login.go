@@ -27,9 +27,9 @@ func Login(w http.ResponseWriter, r* http.Request) {
 	if !validate_payload(payload.PASSWORD == "", "password cannot be empty", w) { return }
 
 	// check password
-	var hash string;
+	var hash, status string;
 	var user_id int;
-	err := database.Self.QueryRow(`SELECT password, id FROM users WHERE email = $1`, payload.EMAIL).Scan(&hash, &user_id)
+	err := database.Self.QueryRow(`SELECT password, id, status FROM users WHERE email = $1`, payload.EMAIL).Scan(&hash, &user_id, &status)
 	if err != nil {
 		if err == sql.ErrNoRows{
 			http.Error(w, "Invalid credential", http.StatusForbidden)
@@ -39,6 +39,7 @@ func Login(w http.ResponseWriter, r* http.Request) {
 			return
 		}
 	}
+
 	if !checkPasswordHash(payload.PASSWORD, hash) {
 		http.Error(w, "Invalid credential", http.StatusForbidden)
 		return
