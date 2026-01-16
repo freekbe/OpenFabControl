@@ -5,3 +5,5 @@
 *.3mf
 *.FCBak
 Fabman/reverse/reverse_fabman/reverse_fabman-backups
+doc/.$database_schema.drawio.bkp
+doc/.$database_schema.drawio.dtmp
