@@ -5,7 +5,7 @@ COLIMA_START_OPTIONS = start
 
 # Read DEV from .env file
 DEV := $(shell grep -E '^DEV=' .env 2>/dev/null | cut -d '=' -f2 | tr -d ' ' || echo "")
-# Read ENABLE_SSL_ON_NGINX from .env file and calculate NGINX_INTERNAL_PORT
+# Determinate nginx internal port based on readed ENABLE_SSL_ON_NGINX value
 ENABLE_SSL := $(shell grep -E '^ENABLE_SSL_ON_NGINX=' .env 2>/dev/null | cut -d '=' -f2 | tr -d ' ' | tr '[:upper:]' '[:lower:]' || echo "true")
 NGINX_INTERNAL_PORT := $(if $(filter true 1 yes,$(ENABLE_SSL)),443,80)
 

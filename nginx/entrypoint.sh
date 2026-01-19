@@ -25,8 +25,5 @@ fi
 # Generate nginx configuration from template
 envsubst '${NGINX_LISTEN_PORT} ${NGINX_SSL_CONFIG} ${NGINX_SSL_CERT} ${NGINX_SSL_KEY} ${NGINX_SSL_PROTOCOLS} ${NGINX_SSL_CIPHERS}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
 
-echo "Generated nginx configuration:"
-cat /etc/nginx/conf.d/default.conf
-
 # Execute nginx
 exec nginx -g 'daemon off;'
