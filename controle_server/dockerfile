@@ -9,10 +9,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
 FROM alpine:latest
 WORKDIR /app
-# Copy the binary and TLS assets from the builder stage
+# Copy the binary from the builder stage
 COPY --from=builder /app/main /app/main
-COPY --from=builder /app/cert.pem /app/cert.pem
-COPY --from=builder /app/key.pem /app/key.pem
 # Ensure the binary is executable
 RUN chmod +x /app/main
 EXPOSE 3000

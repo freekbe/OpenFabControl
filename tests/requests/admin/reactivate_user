@@ -1,1 +1,1 @@
-curl -k -X POST -d '{"user_id":1}' https://localhost:4443/web-admin-api/reactivate_user
+curl -k -X POST -d '{"user_id":1}' https://localhost:4080/web-admin-api/reactivate_user

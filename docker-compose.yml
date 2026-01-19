@@ -4,8 +4,7 @@ services:
       context: ./controle_server
       dockerfile: Dockerfile
     env_file:
-      # change to .env.local to work localy
-      - .env.local
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
@@ -14,8 +13,7 @@ services:
     image: postgres:15
     restart: always
     env_file:
-      # change to .env.local to work localy
-      - .env.local
+      - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -28,8 +26,7 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "4080:80"
-      - "4443:443"
+      - "4080:443"
     volumes:
       - ./nginx/admin_conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl

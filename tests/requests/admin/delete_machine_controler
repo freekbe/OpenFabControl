@@ -1,1 +1,1 @@
-curl -k -X DELETE -d '{"uuid":"918688ab-2a83-4832-b4e3-400034f6d8f9"}' https://localhost:4443/web-admin-api/delete_machine_controler
+curl -k -X DELETE -d '{"uuid":"918688ab-2a83-4832-b4e3-400034f6d8f9"}' https://localhost:4080/web-admin-api/delete_machine_controler
