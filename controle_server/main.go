@@ -28,17 +28,25 @@ func main() {
 
 // function that run the http server
 func runHttpServer() {
-	// check for TLS certs
+	addr := os.Getenv("SERVER_ADDR")
+	if addr == "" {
+		addr = ":3000"
+	}
+	
+	// Try TLS first if certs are available, otherwise fall back to HTTP
 	if _, errCert := os.Stat("cert.pem"); errCert == nil {
 		if _, errKey := os.Stat("key.pem"); errKey == nil {
-			addr := os.Getenv("SERVER_ADDR")
-			log.Printf("ListenAndServeTLS %s", addr)
+			log.Printf("TLS certs found, starting HTTPS server on %s", addr)
 			if err := http.ListenAndServeTLS(addr, "cert.pem", "key.pem", nil); err != nil {
 				log.Fatalf("ListenAndServeTLS failed: %v", err)
 			}
-			log.Printf("TLS certs not found cannot continue. bye")
 			return
 		}
 	}
-	log.Printf("TLS certs not found cannot continue. bye")
+	
+	// Fall back to HTTP (for use behind reverse proxy with SSL termination)
+	log.Printf("TLS certs not found, starting HTTP server on %s", addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
+		log.Fatalf("ListenAndServe failed: %v", err)
+	}
 }

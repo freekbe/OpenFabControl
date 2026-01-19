@@ -1,1 +1,1 @@
-curl -k -X POST -d '{"email":"exemple@exemple.com", "password":"i_use_arch_btw"}' https://localhost:3000/web-user-api/login
+curl -k -X POST -d '{"email":"exemple@exemple.com", "password":"i_use_arch_btw"}' https://localhost:4443/web-user-api/login
