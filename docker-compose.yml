@@ -4,10 +4,10 @@ services:
       context: ./controle_server
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "4081:3000"
     env_file:
       # change to .env.local to work localy
-      - stack.env
+      - .env.local
     depends_on:
       postgres:
         condition: service_healthy
@@ -17,11 +17,9 @@ services:
     restart: always
     env_file:
       # change to .env.local to work localy
-      - stack.env
+      - .env.local
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -32,8 +30,8 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "8080:80"
-      - "4343:443"
+      - "4080:80"
+      # - "4343:443"
     volumes:
       - ./nginx/admin_conf.d:/etc/nginx/conf.d
       - ./web_admin:/var/www/html
@@ -44,7 +42,7 @@ services:
     image: adminer:latest
     restart: always
     ports:
-      - "8081:8080"
+      - "4082:8080"
     environment:
       ADMINER_DEFAULT_SERVER: postgres
     depends_on:

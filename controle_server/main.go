@@ -41,5 +41,4 @@ func runHttpServer() {
 		}
 	}
 	log.Printf("TLS certs not found cannot continue. bye")
-	return
 }
