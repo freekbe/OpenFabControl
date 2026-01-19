@@ -6,6 +6,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
+      # change to the .env.local to work localy
       - .env
     depends_on:
       postgres:
@@ -15,6 +16,7 @@ services:
     image: postgres:15
     restart: always
     env_file:
+      # change to the .env.local to work localy
       - .env
     volumes:
       - pgdata:/var/lib/postgresql/data
