@@ -24,13 +24,18 @@ services:
       start_period: 10s
 
   nginx:
-    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     ports:
-      - "4080:443"
+      - "${NGINX_EXTERNAL_PORT:-4080}:${NGINX_INTERNAL_PORT:-443}"
     volumes:
-      - ./nginx/admin_conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl
       - ./web_admin:/var/www/html
+    environment:
+      - ENABLE_SSL_ON_NGINX=${ENABLE_SSL_ON_NGINX:-true}
+    env_file:
+      - .env
     depends_on:
       - controle_server
 

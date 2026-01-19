@@ -1,13 +1,13 @@
-# HTTP server - redirect to HTTPS
+# HTTP/HTTPS server configuration
 server {
-    listen 443 ssl;
+    listen ${NGINX_LISTEN_PORT}${NGINX_SSL_CONFIG};
     server_name localhost;
 
-    # SSL configuration
-    ssl_certificate /etc/nginx/ssl/cert.pem;
-    ssl_certificate_key /etc/nginx/ssl/key.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
+    # SSL configuration (only if enabled)
+    ${NGINX_SSL_CERT}
+    ${NGINX_SSL_KEY}
+    ${NGINX_SSL_PROTOCOLS}
+    ${NGINX_SSL_CIPHERS}
 
     root /var/www/html;
     index index.html index.htm;
