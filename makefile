@@ -1,5 +1,5 @@
 COMPOSE_FILE = docker-compose.yml
-COMPOSE_COMMAND = docker-compose
+COMPOSE_COMMAND = $(shell grep -E '^COMPOSE_COMMAND=' .env 2>/dev/null | cut -d '=' -f2 || echo "")
 
 COLIMA_START_OPTIONS = start
 
