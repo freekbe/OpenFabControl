@@ -34,8 +34,6 @@ services:
     volumes:
       - ./nginx/ssl:/etc/nginx/ssl
       - ./web_admin:/var/www/html
-    environment:
-      - ENABLE_SSL_ON_NGINX=${ENABLE_SSL_ON_NGINX:-true}
     env_file:
       - .env
       - stack.env
