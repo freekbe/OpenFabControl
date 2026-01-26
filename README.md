@@ -47,7 +47,12 @@ We welcome contributions from anyone! Here is how to help:
 Don't know what you can do ? contact me!
 
 ## Development Environment
-to-do
+### Control_server
+to run it :
+   exec make on the folder root. If does not work check you .env var.
+### Machine controler
+To compile it, go to the arduino IDE and press the compile button. or compile-and-upload if it is want you wanna do.
+*Note:* I'll try to have a terminal based compilation and upload in the future.
 
 ## Roadmap
 
