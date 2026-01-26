@@ -13,6 +13,9 @@ services:
   postgres:
     image: postgres:15
     restart: always
+    # If you need to access the database from your local machine (outside the docker network), uncoment the following lines:
+    # ports:
+    #   - "5432:5432"
     env_file:
       - .env
       - stack.env
@@ -32,7 +35,8 @@ services:
     ports:
       - "${NGINX_EXTERNAL_PORT:-4080}:${NGINX_INTERNAL_PORT:-443}"
     volumes:
-      - ./web_admin:/var/www/html
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./web_admin/dist:/var/www/html
     env_file:
       - .env
       - stack.env
