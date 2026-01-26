@@ -32,19 +32,19 @@ func Edit_machine_controler(w http.ResponseWriter, r *http.Request) {
 		if i != 0 { return ", " }
 		return ""
 	}
-	i := 1;
-	if payload.ZONE				!= "" { set_close += fmt.Sprint("zone = $", i); i++ }
-	if payload.NAME 			!= "" { set_close += fmt.Sprint(comma(i), "name = $", i); i++ }
-	if payload.MANUAL			!= "" { set_close += fmt.Sprint(comma(i), "manual = $", i); i++ }
-	if payload.PRICE_BOOKING	!= "" { set_close += fmt.Sprint(comma(i), "price_booking_in_eur = $", i); i++ }
-	if payload.PRICE_USAGE		!= "" { set_close += fmt.Sprint(comma(i), "price_usage_in_eur = $", i); i++ }
+	i := 0;
+	if payload.ZONE				!= "" { set_close += fmt.Sprint(comma(i), "zone = $", i+1); i++ }
+	if payload.NAME 			!= "" { set_close += fmt.Sprint(comma(i), "name = $", i+1); i++ }
+	if payload.MANUAL			!= "" { set_close += fmt.Sprint(comma(i), "manual = $", i+1); i++ }
+	if payload.PRICE_BOOKING	!= "" { set_close += fmt.Sprint(comma(i), "price_booking_in_eur = $", i+1); i++ }
+	if payload.PRICE_USAGE		!= "" { set_close += fmt.Sprint(comma(i), "price_usage_in_eur = $", i+1); i++ }
 
 	if (set_close == "") {
 		utils.Respond_error(w, "invalid json: no data to update send", http.StatusBadRequest)
 		return
 	}
 	// build the querry
-	query := "UPDATE machine_controller SET " + set_close + fmt.Sprint(" WHERE uuid = $", i, ";");
+	query := "UPDATE machine_controller SET " + set_close + fmt.Sprint(" WHERE uuid = $", i+1, ";");
 
 	// build parameters
 	params := []interface{}{}
