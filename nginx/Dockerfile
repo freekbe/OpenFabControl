@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y gettext-base && rm -rf /var/lib/apt/lis
 COPY admin_conf.d/default.conf.template /etc/nginx/templates/default.conf.template
 COPY entrypoint.sh /entrypoint.sh
 
+# Copy SSL cert
+COPY ssl/* /etc/nginx/ssl/
+
 # Make entrypoint executable
 RUN chmod +x /entrypoint.sh
 

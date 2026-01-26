@@ -32,7 +32,6 @@ services:
     ports:
       - "${NGINX_EXTERNAL_PORT:-4080}:${NGINX_INTERNAL_PORT:-443}"
     volumes:
-      - ./nginx/ssl:/etc/nginx/ssl
       - ./web_admin:/var/www/html
     env_file:
       - .env

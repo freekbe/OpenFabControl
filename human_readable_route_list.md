@@ -13,8 +13,10 @@ POST    /web-admin-api/edit_machine_controler                     // Edit the in
 POST    /web-admin-api/create_user                                // Create a users (the send mail dont work)
 POST    /web-admin-api/activate                                   // activate an account
 POST    /web-admin-api/desactivate                                // desactivate an account
+DELETE  /web-admin-api/delete_user                                // Delete a users
 ## roles
 POST    /web-admin-api/create_role                                // Create a role
+DELETE  /web-admin-api/delete_role                                // Delete a role
 
 # API access from user page
 ## users
@@ -28,12 +30,10 @@ POST    /web-user-api/login                                      // login trough
 ## users
 POST    /web-user-api/me                                          // return profile info
 POST    /web-user-api/edit_profile                                // edit self
-DELETE  /web-admin-api/delete_user                                // Delete a users
 POST    /web-admin-api/edit_user                                  // Update a users
 POST    /web-admin-api/logout                                     // logout the logged in user
 
 ## roles
-DELETE  /web-admin-api/delete_role                                // Delete a role
 POST    /web-admin-api/assign_role_to_user                        // Assign a role to a user
 POST    /web-admin-api/remove_role_from_user                      // Remove a role from a user
 
