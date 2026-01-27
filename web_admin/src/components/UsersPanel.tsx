@@ -6,9 +6,7 @@ function UsersPanel() {
       <Typography variant="h4" component="h1" gutterBottom>
         Users
       </Typography>
-      <Typography variant="body1">
-        Manage users in your system. Add, edit, or remove user accounts.
-      </Typography>
+      <Typography variant="body1">Manage users in your system. Add, edit, or remove user accounts.</Typography>
     </Box>
   );
 }

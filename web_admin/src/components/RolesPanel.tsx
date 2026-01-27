@@ -7,8 +7,7 @@ function RolesPanel() {
         Roles
       </Typography>
       <Typography variant="body1">
-        Manage roles and permissions. Define access levels for different user
-        groups.
+        Manage roles and permissions. Define access levels for different user groups.
       </Typography>
     </Box>
   );

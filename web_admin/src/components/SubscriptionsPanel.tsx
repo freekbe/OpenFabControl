@@ -6,9 +6,7 @@ function SubscriptionsPanel() {
       <Typography variant="h4" component="h1" gutterBottom>
         Subscriptions
       </Typography>
-      <Typography variant="body1">
-        Manage subscriptions and billing. View active plans and payment history.
-      </Typography>
+      <Typography variant="body1">Manage subscriptions and billing. View active plans and payment history.</Typography>
     </Box>
   );
 }

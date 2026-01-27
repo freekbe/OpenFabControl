@@ -1,3 +1,4 @@
+import { SvgIconComponent } from '@mui/icons-material';
 import CheckIcon from '@mui/icons-material/Check';
 import CircleIcon from '@mui/icons-material/Circle';
 import CloseIcon from '@mui/icons-material/Close';
@@ -20,24 +21,43 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Snackbar,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import PropTypes from 'prop-types';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 const API_BASE = '/web-admin-api';
 
-const DEVICE_TYPE_ICONS = {
+interface Device {
+  approved: boolean;
+  name: string;
+  type: string;
+  zone: string;
+  uuid: string;
+  price_booking_in_eur?: number;
+  price_usage_in_eur?: number;
+}
+
+interface DeviceCardProps {
+  device: Device;
+  onApprove: (uuid: string) => void;
+  onUnapprove: (uuid: string) => void;
+  viewMode: ViewMode;
+}
+
+type ViewMode = 'grid' | 'stack';
+
+const DEVICE_TYPE_ICONS: Record<string, SvgIconComponent> = {
   'fm-bv2': PrecisionManufacturingIcon,
   // "device-type-1": AnyIcon,
   // "device-type-2": AnyIcon,
 };
 
-function DeviceCard({ device, onApprove, onUnapprove, viewMode }) {
+function DeviceCard({ device, onApprove, onUnapprove, viewMode }: DeviceCardProps) {
   const isApproved = device.approved;
   const TypeIcon = DEVICE_TYPE_ICONS[device.type] || DevicesOtherIcon;
 
@@ -89,32 +109,17 @@ function DeviceCard({ device, onApprove, onUnapprove, viewMode }) {
   );
 }
 
-DeviceCard.propTypes = {
-  device: PropTypes.shape({
-    approved: PropTypes.bool,
-    name: PropTypes.string,
-    type: PropTypes.string,
-    zone: PropTypes.string,
-    uuid: PropTypes.string,
-    price_booking_in_eur: PropTypes.number,
-    price_usage_in_eur: PropTypes.number,
-  }).isRequired,
-  onApprove: PropTypes.func.isRequired,
-  onUnapprove: PropTypes.func.isRequired,
-  viewMode: PropTypes.oneOf(['grid', 'stack']).isRequired,
-};
-
 function DevicesPanel() {
-  const [viewMode, setViewMode] = useState('grid');
-  const [notApprovedDevices, setNotApprovedDevices] = useState([]);
-  const [approvedDevices, setApprovedDevices] = useState([]);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [notApprovedDevices, setNotApprovedDevices] = useState<Device[]>([]);
+  const [approvedDevices, setApprovedDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
   const [zoneFilter, setZoneFilter] = useState('All');
 
   const allZones = useMemo(() => {
-    const zones = new Set();
+    const zones = new Set<string>();
     [...notApprovedDevices, ...approvedDevices].forEach((device) => {
       if (device.zone) {
         zones.add(device.zone);
@@ -154,7 +159,7 @@ function DevicesPanel() {
       setNotApprovedDevices(notApprovedData || []);
       setApprovedDevices(approvedData || []);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       if (showLoading) {
         setLoading(false);
@@ -166,13 +171,13 @@ function DevicesPanel() {
     fetchDevices();
   }, []);
 
-  const handleViewModeChange = (_event, newMode) => {
+  const handleViewModeChange = (_event: React.MouseEvent<HTMLElement>, newMode: ViewMode | null) => {
     if (newMode !== null) {
       setViewMode(newMode);
     }
   };
 
-  const handleApprove = async (uuid) => {
+  const handleApprove = async (uuid: string) => {
     try {
       const res = await fetch(`${API_BASE}/approve_machine_controler`, {
         method: 'POST',
@@ -187,11 +192,11 @@ function DevicesPanel() {
     } catch (err) {
       const errorMsg = 'Failed to approve device';
       console.error(errorMsg, err);
-      setSnackbar({ open: true, message: `${errorMsg}: ${err.message}` });
+      setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
     }
   };
 
-  const handleUnapprove = async (uuid) => {
+  const handleUnapprove = async (uuid: string) => {
     try {
       const res = await fetch(`${API_BASE}/unapprove_machine_controler`, {
         method: 'POST',
@@ -206,7 +211,7 @@ function DevicesPanel() {
     } catch (err) {
       const errorMsg = 'Failed to unapprove device';
       console.error(errorMsg, err);
-      setSnackbar({ open: true, message: `${errorMsg}: ${err.message}` });
+      setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
     }
   };
 
@@ -252,7 +257,7 @@ function DevicesPanel() {
               id="zone-filter"
               value={zoneFilter}
               label="Zone"
-              onChange={(e) => setZoneFilter(e.target.value)}
+              onChange={(e: SelectChangeEvent) => setZoneFilter(e.target.value)}
             >
               {allZones.map((zone) => (
                 <MenuItem key={zone} value={zone}>
