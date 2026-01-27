@@ -14,4 +14,3 @@ function SubscriptionsPanel() {
 }
 
 export default SubscriptionsPanel;
-

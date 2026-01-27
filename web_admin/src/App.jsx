@@ -1,9 +1,9 @@
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import DevicesIcon from "@mui/icons-material/Devices";
-import PeopleIcon from "@mui/icons-material/People";
-import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import DevicesIcon from '@mui/icons-material/Devices';
+import PeopleIcon from '@mui/icons-material/People';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import {
   AppBar,
   BottomNavigation,
@@ -17,25 +17,25 @@ import {
   Toolbar,
   Typography,
   useMediaQuery,
-} from "@mui/material";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useEffect, useMemo, useState } from "react";
-import DevicesPanel from "./components/DevicesPanel";
-import RolesPanel from "./components/RolesPanel";
-import SubscriptionsPanel from "./components/SubscriptionsPanel";
-import UsersPanel from "./components/UsersPanel";
+} from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { useEffect, useMemo, useState } from 'react';
+import DevicesPanel from './components/DevicesPanel';
+import RolesPanel from './components/RolesPanel';
+import SubscriptionsPanel from './components/SubscriptionsPanel';
+import UsersPanel from './components/UsersPanel';
 
 const NAV_ITEMS = [
-  { label: "Users", icon: PeopleIcon },
-  { label: "Roles", icon: AdminPanelSettingsIcon },
-  { label: "Subscriptions", icon: SubscriptionsIcon },
-  { label: "Devices", icon: DevicesIcon },
+  { label: 'Users', icon: PeopleIcon },
+  { label: 'Roles', icon: AdminPanelSettingsIcon },
+  { label: 'Subscriptions', icon: SubscriptionsIcon },
+  { label: 'Devices', icon: DevicesIcon },
 ];
 
 function App() {
   const [tabValue, setTabValue] = useState(0);
   const [themeMode, setThemeMode] = useState(
-    () => localStorage.getItem("themeMode") || "light",
+    () => localStorage.getItem('themeMode') || 'light'
   );
 
   const theme = useMemo(
@@ -44,24 +44,24 @@ function App() {
         palette: {
           mode: themeMode,
           primary: {
-            main: "#abc78f",
+            main: '#abc78f',
           },
           secondary: {
-            main: "#c60091",
+            main: '#c60091',
           },
         },
       }),
-    [themeMode],
+    [themeMode]
   );
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
-    localStorage.setItem("themeMode", themeMode);
+    localStorage.setItem('themeMode', themeMode);
   }, [themeMode]);
 
   const toggleThemeMode = () => {
-    setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
+    setThemeMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
   const handleTabChange = (_event, newValue) => {
@@ -72,7 +72,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box
-        sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+        sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
       >
         {/* App bar */}
         <AppBar position="static">
@@ -85,14 +85,14 @@ function App() {
               onClick={toggleThemeMode}
               aria-label="toggle theme"
             >
-              {themeMode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+              {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
           </Toolbar>
         </AppBar>
 
         {/* Desktop tabs */}
         {!isMobile && (
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
@@ -132,7 +132,7 @@ function App() {
         {/* Mobile tabs */}
         {isMobile && (
           <Paper
-            sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+            sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}
             elevation={3}
           >
             <BottomNavigation
