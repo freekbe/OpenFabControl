@@ -26,6 +26,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
 
 const API_BASE = '/web-admin-api';
@@ -52,55 +53,34 @@ function DeviceCard({ device, onApprove, onUnapprove, viewMode }) {
       }}
     >
       <CardHeader
-        avatar={
-          viewMode === 'grid' && <TypeIcon sx={{ color: 'text.secondary' }} />
-        }
+        avatar={viewMode === 'grid' && <TypeIcon sx={{ color: 'text.secondary' }} />}
         title={device.name}
         titleTypographyProps={{ variant: 'h6' }}
-        action={
-          <CircleIcon
-            sx={{ fontSize: 12, mt: 1, mr: 1 }}
-            color={isApproved ? 'success' : 'error'}
-          />
-        }
+        action={<CircleIcon sx={{ fontSize: 12, mt: 1, mr: 1 }} color={isApproved ? 'success' : 'error'} />}
       />
       <CardContent sx={{ pt: 0 }}>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          {viewMode === 'stack' && (
-            <TypeIcon sx={{ fontSize: 96, color: 'text.secondary' }} />
-          )}
+          {viewMode === 'stack' && <TypeIcon sx={{ fontSize: 96, color: 'text.secondary' }} />}
           <Box>
             <Typography color="text.secondary" gutterBottom>
               Type: {device.type}
             </Typography>
-            <Typography variant="body2">
-              Zone: {device.zone || 'N/A'}
-            </Typography>
+            <Typography variant="body2">Zone: {device.zone || 'N/A'}</Typography>
             <Typography variant="body2">UUID: {device.uuid}</Typography>
             <Typography variant="body2">
-              Booking: €{device.price_booking_in_eur?.toFixed(2) ?? '0.00'} |
-              Usage: €{device.price_usage_in_eur?.toFixed(2) ?? '0.00'}
+              Booking: €{device.price_booking_in_eur?.toFixed(2) ?? '0.00'} | Usage: €
+              {device.price_usage_in_eur?.toFixed(2) ?? '0.00'}
             </Typography>
           </Box>
         </Box>
       </CardContent>
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         {isApproved ? (
-          <Button
-            size="small"
-            color="error"
-            startIcon={<CloseIcon />}
-            onClick={() => onUnapprove(device.uuid)}
-          >
+          <Button size="small" color="error" startIcon={<CloseIcon />} onClick={() => onUnapprove(device.uuid)}>
             Unapprove
           </Button>
         ) : (
-          <Button
-            size="small"
-            color="success"
-            startIcon={<CheckIcon />}
-            onClick={() => onApprove(device.uuid)}
-          >
+          <Button size="small" color="success" startIcon={<CheckIcon />} onClick={() => onApprove(device.uuid)}>
             Approve
           </Button>
         )}
@@ -108,6 +88,21 @@ function DeviceCard({ device, onApprove, onUnapprove, viewMode }) {
     </Card>
   );
 }
+
+DeviceCard.propTypes = {
+  device: PropTypes.shape({
+    approved: PropTypes.bool,
+    name: PropTypes.string,
+    type: PropTypes.string,
+    zone: PropTypes.string,
+    uuid: PropTypes.string,
+    price_booking_in_eur: PropTypes.number,
+    price_usage_in_eur: PropTypes.number,
+  }).isRequired,
+  onApprove: PropTypes.func.isRequired,
+  onUnapprove: PropTypes.func.isRequired,
+  viewMode: PropTypes.oneOf(['grid', 'stack']).isRequired,
+};
 
 function DevicesPanel() {
   const [viewMode, setViewMode] = useState('grid');
@@ -289,9 +284,7 @@ function DevicesPanel() {
           Pending Approval ({filteredNotApprovedDevices.length})
         </Typography>
         {filteredNotApprovedDevices.length === 0 ? (
-          <Typography color="text.secondary">
-            No devices pending approval
-          </Typography>
+          <Typography color="text.secondary">No devices pending approval</Typography>
         ) : viewMode === 'stack' ? (
           <Stack spacing={2}>
             {filteredNotApprovedDevices.map((device) => (
@@ -363,11 +356,7 @@ function DevicesPanel() {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
           {snackbar.message}
         </Alert>
       </Snackbar>
