@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography } from "@mui/material";
 
 function UsersPanel() {
   return (
@@ -14,4 +14,3 @@ function UsersPanel() {
 }
 
 export default UsersPanel;
-

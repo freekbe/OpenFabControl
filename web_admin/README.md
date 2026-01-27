@@ -34,13 +34,11 @@ npm run lint
 
 ## Production Run
 
-The built files are in `dist/` and served by nginx via docker-compose.
+The web_admin is automatically built as part of the docker-compose stack triggered by the `make` command before being served by nginx.
 
 ```bash
-# From web_admin/
-npm run build        # Build the app
-cd ..
-make up              # Start the stack
+# From project root
+make
 ```
 
 Access at `https://localhost:4080`

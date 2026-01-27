@@ -28,6 +28,14 @@ services:
       retries: 10
       start_period: 10s
 
+  web_admin_builder:
+    build:
+      context: ./web_admin
+      dockerfile: Dockerfile
+    volumes:
+      # We mount the /web_admin_dist volume that contains the built files persisted after the build
+      - web_admin_dist:/web_admin_dist
+
   nginx:
     build:
       context: ./nginx
@@ -36,12 +44,15 @@ services:
       - "${NGINX_EXTERNAL_PORT:-4080}:${NGINX_INTERNAL_PORT:-443}"
     volumes:
       - ./nginx/ssl:/etc/nginx/ssl
-      - ./web_admin/dist:/var/www/html
+      - web_admin_dist:/var/www/html:ro
     env_file:
       - .env
       - stack.env
     depends_on:
-      - controle_server
+      web_admin_builder:
+        condition: service_completed_successfully
+      controle_server:
+        condition: service_started
 
   adminer:
     image: adminer:latest
@@ -57,4 +68,6 @@ services:
 
 volumes:
   pgdata:
+    driver: local
+  web_admin_dist:
     driver: local
