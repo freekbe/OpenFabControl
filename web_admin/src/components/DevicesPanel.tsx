@@ -75,7 +75,7 @@ function DeviceCard({ device, onApprove, onUnapprove, viewMode }: DeviceCardProp
       <CardHeader
         avatar={viewMode === 'grid' && <TypeIcon sx={{ color: 'text.secondary' }} />}
         title={device.name}
-        titleTypographyProps={{ variant: 'h6' }}
+        slotProps={{ title: { variant: 'h6' } }}
         action={<CircleIcon sx={{ fontSize: 12, mt: 1, mr: 1 }} color={isApproved ? 'success' : 'error'} />}
       />
       <CardContent sx={{ pt: 0 }}>
@@ -305,7 +305,7 @@ function DevicesPanel() {
         ) : (
           <Grid container spacing={2}>
             {filteredNotApprovedDevices.map((device) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={device.uuid}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={device.uuid}>
                 <DeviceCard
                   device={device}
                   onApprove={handleApprove}
@@ -341,7 +341,7 @@ function DevicesPanel() {
         ) : (
           <Grid container spacing={2}>
             {filteredApprovedDevices.map((device) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={device.uuid}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={device.uuid}>
                 <DeviceCard
                   device={device}
                   onApprove={handleApprove}
