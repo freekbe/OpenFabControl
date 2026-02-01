@@ -1,0 +1,19 @@
+package xxx
+
+import (
+	"OpenFabControl/utils"
+	"net/http"
+)
+
+func xxx(w http.ResponseWriter, r* http.Request) {
+
+	if utils.Reject_all_methode_exept(r, w, xxx) != nil { return }
+
+	var payload struct {
+		xxx	xxx	`json:""`
+	}
+
+	if utils.Extract_payload_data(r, w, &payload) != nil { return }
+
+	if !utils.Validate_payload(payload.xxx == "", "xxx cannot be empty", w) { return }
+}

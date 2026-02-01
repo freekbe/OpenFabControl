@@ -1,0 +1,1 @@
+curl -k -X POST -d '{"id":"2", "first_name":"new_name", "last_name":"new_2" }' https://localhost:4080/web-admin-api/update_user
