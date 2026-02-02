@@ -22,6 +22,20 @@ type Machine_controller struct {
 	CreatedAt				time.Time	`json:"created_at"`
 }
 
+type User struct {
+	ID						int 		`json:"id"`
+	ACCESS_KEY 				string 		`json:"access_key"`
+	PASSWORD				string 		`json:"password"`
+	FIRST_NAME 				string 		`json:"first_name"`
+	LAST_NAME 				string 		`json:"last_name"`
+	TVA 					string 		`json:"tva"`
+	FACTURATION_ADDRESS 	string 		`json:"facturation_address"`
+	ACCOUNT 				string 		`json:"account"`
+	VERIFICATION_CODE 		string 		`json:"verification_code"`
+	STATUS 					string 		`json:"status"`
+	CreatedAt 				time.Time	`json:"created_at"`
+}
+
 //////////////
 // jwt auth //
 //////////////

@@ -3,11 +3,12 @@ package database
 import (
 	"context"
 	"database/sql"
-	_ "github.com/lib/pq" // postgress specific package
 	"fmt"
 	"log"
 	"os"
 	"time"
+
+	_ "github.com/lib/pq" // postgress specific package
 )
 
 var Self *sql.DB
@@ -33,11 +34,11 @@ func Initdb() {
 }
 
 func getenv() (string, string, string, string, string) {
-	pgUser	:= os.Getenv("POSTGRES_USER")
-	pgPass	:= os.Getenv("POSTGRES_PASSWORD")
-	pgHost	:= os.Getenv("POSTGRES_HOST")
-	pgPort	:= os.Getenv("POSTGRES_PORT")
-	pgDB	:= os.Getenv("POSTGRES_DB")
+	pgUser := os.Getenv("POSTGRES_USER")
+	pgPass := os.Getenv("POSTGRES_PASSWORD")
+	pgHost := os.Getenv("POSTGRES_HOST")
+	pgPort := os.Getenv("POSTGRES_PORT")
+	pgDB := os.Getenv("POSTGRES_DB")
 
 	return pgUser, pgPass, pgHost, pgPort, pgDB
 }
@@ -79,7 +80,9 @@ func ensureTable() error {
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);` // FLOAT is synonym to double pressision (64 bit float)
 	_, err := Self.Exec(create)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	// create the roles table
 	create = `CREATE TABLE IF NOT EXISTS roles (
@@ -87,25 +90,29 @@ func ensureTable() error {
 		name VARCHAR(32) UNIQUE
 	);`
 	_, err = Self.Exec(create)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	// create users table
 	create = `CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
-		access_key TEXT NOT NULL,
-		email VARCHAR(255) UNIQUE NOT NULL,
-		password VARCHAR(255),
-		first_name VARCHAR(64),
-		last_name VARCHAR(64),
-		tva VARCHAR(16),
-		facturation_address VARCHAR(255),
-		account VARCHAR(34),
-		verification_code VARCHAR(32) NOT NULL,
-		status VARCHAR(16) DEFAULT 'pending',
+		access_key TEXT                  DEFAULT '' NOT NULL,
+		email VARCHAR(255) UNIQUE        DEFAULT '' NOT NULL,
+		password VARCHAR(255)            DEFAULT '' NOT NULL,
+		first_name VARCHAR(64)           DEFAULT '' NOT NULL,
+		last_name VARCHAR(64)            DEFAULT '' NOT NULL,
+		tva VARCHAR(16)                  DEFAULT '' NOT NULL,
+		facturation_address VARCHAR(255) DEFAULT '' NOT NULL,
+		account VARCHAR(34)              DEFAULT '' NOT NULL,
+		verification_code VARCHAR(32)    DEFAULT '' NOT NULL,
+		status VARCHAR(16)               DEFAULT 'pending' NOT NULL,
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);`
 	_, err = Self.Exec(create)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	// create user_roles junction table
 	create = `CREATE TABLE IF NOT EXISTS user_roles (
@@ -114,7 +121,9 @@ func ensureTable() error {
 		PRIMARY KEY (user_id, role_id)
 	);`
 	_, err = Self.Exec(create)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	// create user_machines junction table
 	create = `CREATE TABLE IF NOT EXISTS user_machines (
@@ -123,7 +132,9 @@ func ensureTable() error {
 		PRIMARY KEY (user_id, machine_id)
 	);`
 	_, err = Self.Exec(create)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

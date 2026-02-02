@@ -32,6 +32,7 @@ func Setup_routes() {
 
 	// users
 	http.HandleFunc("/web-admin-api/create_user", 								user_handler.Create_user)
+	http.HandleFunc("/web-admin-api/get_user_list", 							user_handler.Get_user_list)
 	http.HandleFunc("/web-admin-api/delete_user", 								user_handler.Delete_user)
 	http.HandleFunc("/web-admin-api/update_user",	 							user_handler.Update_user)
 	// http.HandleFunc("/web-admin-api/get_user_list",	 						user_handler.Get_user_list)

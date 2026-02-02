@@ -4,7 +4,6 @@ import (
 	"OpenFabControl/database"
 	"OpenFabControl/model"
 	"OpenFabControl/utils"
-	"database/sql"
 	"encoding/json"
 	"net/http"
 )
@@ -27,10 +26,8 @@ func get_machine_controler(w http.ResponseWriter, r *http.Request, approved bool
 	var controllers []model.Machine_controller
 	rows, err := database.Self.Query(query);
 	if err != nil {
-		if err == sql.ErrNoRows {
-			w.WriteHeader(http.StatusNotFound);
-			return
-		}
+		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
+		return
 	}
 	defer rows.Close()
 
