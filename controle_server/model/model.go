@@ -31,7 +31,7 @@ type User struct {
 	LAST_NAME           string    `json:"last_name"`
 	TVA                 string    `json:"tva"`
 	FACTURATION_ADDRESS string    `json:"facturation_address"`
-	ACCOUNT             string    `json:"account"`
+	FACTURATION_ACCOUNT string    `json:"facturation_account"`
 	VERIFICATION_CODE   string    `json:"verification_code"`
 	STATUS              string    `json:"status"`
 	CreatedAt           time.Time `json:"created_at"`

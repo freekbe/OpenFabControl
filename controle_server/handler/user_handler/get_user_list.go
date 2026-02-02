@@ -17,7 +17,7 @@ func Get_user_list(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get the users
-	query := "SELECT id, first_name, last_name, tva, facturation_address, account, status, created_at FROM users"
+	query := "SELECT id, first_name, last_name, tva, facturation_address, facturation_account, status, created_at FROM users"
 	var users []model.User
 	rows, err := database.Self.Query(query)
 	if err != nil {
@@ -34,7 +34,7 @@ func Get_user_list(w http.ResponseWriter, r *http.Request) {
 			&user.LAST_NAME,
 			&user.TVA,
 			&user.FACTURATION_ADDRESS,
-			&user.ACCOUNT,
+			&user.FACTURATION_ACCOUNT,
 			&user.STATUS,
 			&user.CreatedAt); err != nil {
 			utils.Respond_error(w, "Internal Server Error", http.StatusInternalServerError)
