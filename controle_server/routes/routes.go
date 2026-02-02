@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"OpenFabControl/handler/machine_controler_handler"
+	"OpenFabControl/handler/resource_handler"
 	"OpenFabControl/handler/role_handler"
 	"OpenFabControl/handler/user_handler"
 	"fmt"
@@ -14,7 +14,7 @@ func Setup_routes() {
 	// machine controler routes //
 	//////////////////////////////
 
-	http.HandleFunc("/machine-api/register", machine_controler_handler.Register)
+	http.HandleFunc("/machine-api/register", resource_handler.Register)
 	http.HandleFunc("/machine-api/create_user", user_handler.Create_user)
 
 	///////////////////////
@@ -24,11 +24,11 @@ func Setup_routes() {
 	// TODO : admin pages have to be protected (not done for the moment for dev purpose)
 
 	// machine controlers
-	http.HandleFunc("/web-admin-api/get_machine_controler_list_to_approve", machine_controler_handler.Get_machine_controler_list_to_approve)
-	http.HandleFunc("/web-admin-api/get_machine_controler_list_approved", machine_controler_handler.Get_machine_controler_list_approved)
-	http.HandleFunc("/web-admin-api/approve_machine_controler", machine_controler_handler.Approve_machine_controler)
-	http.HandleFunc("/web-admin-api/delete_machine_controler", machine_controler_handler.Delete_machine_controler)
-	http.HandleFunc("/web-admin-api/edit_machine_controler", machine_controler_handler.Edit_machine_controler)
+	http.HandleFunc("/web-admin-api/get_resource_list_to_approve", resource_handler.Get_resource_list_to_approve)
+	http.HandleFunc("/web-admin-api/get_resource_list_approved", resource_handler.Get_resource_list_approved)
+	http.HandleFunc("/web-admin-api/approve_resource", resource_handler.Approve_resource)
+	http.HandleFunc("/web-admin-api/delete_resource", resource_handler.Delete_resource)
+	http.HandleFunc("/web-admin-api/edit_resource", resource_handler.Edit_resource)
 
 	// users
 	http.HandleFunc("/web-admin-api/create_user", user_handler.Create_user)

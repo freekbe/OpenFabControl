@@ -1,4 +1,4 @@
-package machine_controler_handler
+package resource_handler
 
 import (
 	"OpenFabControl/database"
@@ -6,18 +6,24 @@ import (
 	"net/http"
 )
 
-// route to delete a machine controler from the system
-func Delete_machine_controler(w http.ResponseWriter, r *http.Request) {
+// route to delete a resource from the system
+func Delete_resource(w http.ResponseWriter, r *http.Request) {
 
-	if utils.Reject_all_methode_exept(r, w, http.MethodDelete) != nil { return }
-
-	var payload struct {
-		UUID     string `json:"uuid"`
+	if utils.Reject_all_methode_exept(r, w, http.MethodDelete) != nil {
+		return
 	}
 
-	if utils.Extract_payload_data(r, w, &payload) != nil { return }
+	var payload struct {
+		UUID string `json:"uuid"`
+	}
 
-	if !utils.Validate_payload(payload.UUID == "", "UUID cannot be empty", w) { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil {
+		return
+	}
+
+	if !utils.Validate_payload(payload.UUID == "", "UUID cannot be empty", w) {
+		return
+	}
 
 	query := "DELETE FROM machine_controller WHERE uuid = $1"
 	result, err := database.Self.Exec(query, payload.UUID)
@@ -30,6 +36,6 @@ func Delete_machine_controler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.Respond_json(w, map[string]any{
-		"msg" : "Machine controler deleted successfully",
+		"msg": "Machine controler deleted successfully",
 	}, http.StatusOK)
 }

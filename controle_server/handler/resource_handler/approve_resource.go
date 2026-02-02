@@ -1,4 +1,4 @@
-package machine_controler_handler
+package resource_handler
 
 import (
 	"OpenFabControl/database"
@@ -6,18 +6,24 @@ import (
 	"net/http"
 )
 
-// Route to approve a machine controler in the system
-func Approve_machine_controler(w http.ResponseWriter, r *http.Request) {
+// Route to approve a resource in the system
+func Approve_resource(w http.ResponseWriter, r *http.Request) {
 
-	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
-
-	var payload struct {
-		UUID     string `json:"uuid"`
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil {
+		return
 	}
 
-	if utils.Extract_payload_data(r, w, &payload) != nil { return }
+	var payload struct {
+		UUID string `json:"uuid"`
+	}
 
-	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
+	if utils.Extract_payload_data(r, w, &payload) != nil {
+		return
+	}
+
+	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) {
+		return
+	}
 
 	// Set approved to true in the db
 	query := "UPDATE machine_controller SET approved = TRUE WHERE uuid = $1"
@@ -32,6 +38,6 @@ func Approve_machine_controler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.Respond_json(w, map[string]any{
-		"msg" : "Machine controler approved successfully",
+		"msg": "Machine controler approved successfully",
 	}, http.StatusOK)
 }

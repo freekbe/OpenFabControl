@@ -4,4 +4,4 @@ curl -k -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX
 echo
 echo
 echo Approved
-curl -k -X GET https://localhost:4080/web-admin-api/get_machine_controler_list_approved
+curl -k -X GET https://localhost:4080/web-admin-api/get_resource_list_approved

@@ -67,7 +67,7 @@ func connectWithRetries(dsn string, maxRetries int, delay time.Duration) (*sql.D
 
 func ensureTable() error {
 	// create machine controler table
-	create := `CREATE TABLE IF NOT EXISTS machine_controller (
+	create := `CREATE TABLE IF NOT EXISTS resources (
 		id SERIAL PRIMARY KEY,
 		uuid TEXT UNIQUE NOT NULL,
 		type TEXT NOT NULL,
@@ -120,17 +120,6 @@ func ensureTable() error {
 		user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
 		role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
 		PRIMARY KEY (user_id, role_id)
-	);`
-	_, err = Self.Exec(create)
-	if err != nil {
-		return err
-	}
-
-	// create user_machines junction table
-	create = `CREATE TABLE IF NOT EXISTS user_machines (
-		user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-		machine_id INTEGER REFERENCES machine_controller(id) ON DELETE CASCADE,
-		PRIMARY KEY (user_id, machine_id)
 	);`
 	_, err = Self.Exec(create)
 	if err != nil {

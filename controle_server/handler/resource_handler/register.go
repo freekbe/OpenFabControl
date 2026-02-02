@@ -1,4 +1,4 @@
-package machine_controler_handler
+package resource_handler
 
 import (
 	"OpenFabControl/database"
@@ -10,29 +10,34 @@ import (
 // route register a new machine controler
 func Register(w http.ResponseWriter, r *http.Request) {
 
-	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil { return }
-
-	var payload struct {
-		UUID    string `json:"uuid"`
-		NAME	string `json:"name"`
-		TYPE	string `json:"type"`
+	if utils.Reject_all_methode_exept(r, w, http.MethodPost) != nil {
+		return
 	}
 
-	// extract payload data
-	if utils.Extract_payload_data(r, w, &payload) != nil { return }
+	var payload struct {
+		UUID string `json:"uuid"`
+		NAME string `json:"name"`
+		TYPE string `json:"type"`
+	}
 
 	// validate payload data
 	if payload.TYPE != "fm-bv2" { // && payload.TYPE != "ofmc" && payload.TYPE != "toolsquare" // (future suport)
 		utils.Respond_error(w, "invalid payload: ", http.StatusBadRequest)
 		return
 	}
-	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) { return }
-	if !utils.Validate_payload(payload.NAME == "", "name cannot be empty", w) { return }
+	if !utils.Validate_payload(payload.UUID == "", "uuid cannot be empty", w) {
+		return
+	}
+	if !utils.Validate_payload(payload.NAME == "", "name cannot be empty", w) {
+		return
+	}
 	if !utils.Validate_payload(
 		payload.TYPE != "fm-bv2", // && payload.TYPE != "ofmc" && payload.TYPE != "toolsquare" // (future suport)
-		"unknown or unsuported machine type. Curently supported: 'fm-bv2'. You use '" + payload.TYPE + "'. Is the server up to date ?",
+		"unknown or unsuported machine type. Curently supported: 'fm-bv2'. You use '"+payload.TYPE+"'. Is the server up to date ?",
 		w,
-	) { return }
+	) {
+		return
+	}
 
 	query := `INSERT INTO machine_controller (uuid, type, zone, name, manual, price_booking_in_eur, price_usage_in_eur, approved) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	ON CONFLICT (uuid) DO NOTHING`
@@ -58,8 +63,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.Respond_json(w, map[string]any{
-		"msg"	: "registration saved",
-		"uuid"	: payload.UUID,
-		"name"	: payload.NAME,
+		"msg":  "registration saved",
+		"uuid": payload.UUID,
+		"name": payload.NAME,
 	}, http.StatusCreated)
 }
