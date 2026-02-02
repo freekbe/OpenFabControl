@@ -32,7 +32,7 @@ type User struct {
 	TVA                 string    `json:"tva"`
 	FACTURATION_ADDRESS string    `json:"facturation_address"`
 	FACTURATION_ACCOUNT string    `json:"facturation_account"`
-	VERIFICATION_CODE   string    `json:"verification_code"`
+	ACTIVATION_CODE     string    `json:"activation_code"`
 	STATUS              string    `json:"status"`
 	CreatedAt           time.Time `json:"created_at"`
 }

@@ -14,7 +14,7 @@ func User_one_time_setup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload struct {
-		VERIF_CODE          string `json:"verification_code"`
+		ACTIVATION_CODE     string `json:"activation_code"`
 		FIRST_NAME          string `json:"first_name"`
 		LAST_NAME           string `json:"last_name"`
 		PASSWORD            string `json:"password"`
@@ -28,8 +28,8 @@ func User_one_time_setup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// payload checks
-	if payload.VERIF_CODE == "" {
-		utils.Respond_error(w, "invalid payload: verification_code cannot be empty", http.StatusBadRequest)
+	if payload.ACTIVATION_CODE == "" {
+		utils.Respond_error(w, "invalid payload: activation_code cannot be empty", http.StatusBadRequest)
 		return
 	}
 	if payload.FIRST_NAME == "" {
@@ -51,9 +51,9 @@ func User_one_time_setup(w http.ResponseWriter, r *http.Request) {
 
 	// check if the validation code exist and that the account is waiting setup
 	var status string
-	err := database.Self.QueryRow(`SELECT status FROM users WHERE verification_code = $1`, payload.VERIF_CODE).Scan(&status)
+	err := database.Self.QueryRow(`SELECT status FROM users WHERE activation_code = $1`, payload.ACTIVATION_CODE).Scan(&status)
 	if err != nil {
-		utils.Respond_error(w, "Invalid verification code", http.StatusBadRequest)
+		utils.Respond_error(w, "Invalid activation code", http.StatusBadRequest)
 		return
 	}
 	if status != "pending" {
@@ -67,8 +67,8 @@ func User_one_time_setup(w http.ResponseWriter, r *http.Request) {
 		utils.Respond_error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	query := `UPDATE users SET password = $1, first_name = $2, last_name = $3, tva = $4, facturation_address = $5, facturation_account = $6, status = $7 WHERE verification_code = $8`
-	_, err = database.Self.Exec(query, hashed_password, payload.FIRST_NAME, payload.LAST_NAME, payload.TVA, payload.ADDRESS, payload.FACTURATION_ACCOUNT, "active", payload.VERIF_CODE)
+	query := `UPDATE users SET password = $1, first_name = $2, last_name = $3, tva = $4, facturation_address = $5, facturation_account = $6, status = $7 WHERE activation_code = $8`
+	_, err = database.Self.Exec(query, hashed_password, payload.FIRST_NAME, payload.LAST_NAME, payload.TVA, payload.ADDRESS, payload.FACTURATION_ACCOUNT, "active", payload.ACTIVATION_CODE)
 	if err != nil {
 		utils.Respond_error(w, "internal server error", http.StatusInternalServerError)
 		return

@@ -106,7 +106,7 @@ func ensureTable() error {
 		tva VARCHAR(16)                  DEFAULT '' NOT NULL,
 		facturation_address VARCHAR(255) DEFAULT '' NOT NULL,
 		facturation_account VARCHAR(34)  DEFAULT '' NOT NULL,
-		verification_code VARCHAR(32)    DEFAULT '' NOT NULL,
+		activation_code VARCHAR(32)      DEFAULT '' NOT NULL,
 		status VARCHAR(16)               DEFAULT 'pending' NOT NULL,
 		created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 	);`
