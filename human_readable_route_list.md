@@ -17,8 +17,12 @@ DELETE  /web-admin-api/delete_user                                // Delete a us
 POST    /web-admin-api/update_user                                // Update a users
 GET     /web-admin-api/get-user-list                              // Get the list of all the user registered in the system 
 ## roles
+GET     /web-admin-api/get-role-list                              // Get the list of all the roles created in the system 
 POST    /web-admin-api/create_role                                // Create a role
 DELETE  /web-admin-api/delete_role                                // Delete a role
+POST    /web-admin-api/assign_role_to_user                        // Assign a role to a user
+POST    /web-admin-api/remove_role_from_user                      // Remove a role from a user
+POST    /web-admin-api/get_user_roles                             // Get all the role that a user have
 
 # API access from user page
 ## users
@@ -32,16 +36,12 @@ POST    /web-user-api/login                                      // login trough
 ## users
 POST    /web-user-api/me                                          // return profile info
 POST    /web-user-api/edit_profile                                // edit self
-POST    /web-user-api/logout                                      // logout the logged in user
 POST    /web-admin-api/login
+POST    /web-user-api/logout                                      // logout the logged in user
 POST    /web-admin-api/logout                                     // logout the logged in user
 
 ## roles
-GET     /web-admin-api/list-roles                                 // Get the list of all the roles created in the system 
-POST    /web-admin-api/assign_role_to_user                        // Assign a role to a user
-POST    /web-admin-api/remove_role_from_user                      // Remove a role from a user
 
 ## machine controlers
-POST    /web-admin-api/asign_role_to_user                         // Assign a machine controler to a user
 POST    /machine-api/request_session_start                        // Request the start of a machine usage session // to check how to secure the machine communication so you cannot start/end a session for anyone
 POST    /machine-api/session_end                                  // end the current session

@@ -115,8 +115,8 @@ func ensureTable() error {
 		return err
 	}
 
-	// create user_roles junction table
-	create = `CREATE TABLE IF NOT EXISTS user_roles (
+	// create users_roles junction table
+	create = `CREATE TABLE IF NOT EXISTS users_roles (
 		user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
 		role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
 		PRIMARY KEY (user_id, role_id)
