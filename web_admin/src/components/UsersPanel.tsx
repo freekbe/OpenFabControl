@@ -130,62 +130,57 @@ function UsersPanel() {
     }
   };
 
+  const validateUserForm = (): string | null => {
+    if (!editingUser) return 'No user data';
+
+    if (!editingUser.email.trim()) {
+      return 'Email cannot be empty';
+    }
+
+    if (!editingUser.access_key.trim()) {
+      return 'Access key cannot be empty';
+    }
+
+    return null;
+  };
+
   const handleSaveUser = async () => {
     if (!editingUser) return;
 
+    const validationError = validateUserForm();
+    if (validationError) {
+      setSnackbar({ open: true, message: validationError });
+      return;
+    }
+
+    const endpoint = isEditMode ? '/update_user' : '/create_user';
+    const errorMsg = isEditMode ? 'Failed to update user' : 'Failed to create user';
+
+    let payload;
     if (isEditMode) {
-      // Update existing user
-      try {
-        const { created_at: _created_at, password: _password, status: _status, ...userToUpdate } = editingUser;
-        const res = await fetch(`${API_BASE}/update_user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...userToUpdate }),
-        });
-
-        if (res.ok) {
-          setUserDialogOpen(false);
-          setEditingUser(null);
-          await fetchUsers();
-        } else {
-          throw new Error('API call failed');
-        }
-      } catch (err) {
-        const errorMsg = 'Failed to update user';
-        console.error(errorMsg, err);
-        setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
-      }
+      const { created_at: _created_at, password: _password, status: _status, ...userToUpdate } = editingUser;
+      payload = userToUpdate;
     } else {
-      // Create new user
-      if (!editingUser.email.trim()) {
-        setSnackbar({ open: true, message: 'Email cannot be empty' });
-        return;
-      }
+      payload = { email: editingUser.email, access_key: editingUser.access_key };
+    }
 
-      if (!editingUser.access_key.trim()) {
-        setSnackbar({ open: true, message: 'Access key cannot be empty' });
-        return;
-      }
+    try {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-      try {
-        const res = await fetch(`${API_BASE}/create_user`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: editingUser.email, access_key: editingUser.access_key }),
-        });
-
-        if (res.ok) {
-          setUserDialogOpen(false);
-          setEditingUser(null);
-          await fetchUsers();
-        } else {
-          throw new Error('API call failed');
-        }
-      } catch (err) {
-        const errorMsg = 'Failed to create user';
-        console.error(errorMsg, err);
-        setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
+      if (res.ok) {
+        setUserDialogOpen(false);
+        setEditingUser(null);
+        await fetchUsers();
+      } else {
+        throw new Error('API call failed');
       }
+    } catch (err) {
+      console.error(errorMsg, err);
+      setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
     }
   };
 
