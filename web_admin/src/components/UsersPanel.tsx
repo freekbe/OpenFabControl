@@ -1,3 +1,6 @@
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SecurityIcon from '@mui/icons-material/Security';
 import {
   Alert,
   Box,
@@ -12,6 +15,7 @@ import {
   ListItem,
   ListItemText,
   MenuItem,
+  Paper,
   Select,
   SelectChangeEvent,
   Snackbar,
@@ -24,11 +28,7 @@ import {
   TableRow,
   TextField,
   Typography,
-  Paper,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SecurityIcon from '@mui/icons-material/Security';
 import { useEffect, useState } from 'react';
 
 const API_BASE = '/web-admin-api';
@@ -57,10 +57,8 @@ function UsersPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [newUserAccessKey, setNewUserAccessKey] = useState('');
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [userDialogOpen, setUserDialogOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, userId: '' });
   const [rolesDialogOpen, setRolesDialogOpen] = useState(false);
@@ -98,86 +96,96 @@ function UsersPanel() {
   };
 
   const handleOpenCreateDialog = () => {
-    setCreateDialogOpen(true);
-  };
-
-  const handleCloseCreateDialog = () => {
-    setCreateDialogOpen(false);
-    setNewUserEmail('');
-    setNewUserAccessKey('');
-  };
-
-  const handleCreateUser = async () => {
-    if (!newUserEmail.trim()) {
-      setSnackbar({ open: true, message: 'Email cannot be empty' });
-      return;
-    }
-
-    if (!newUserAccessKey.trim()) {
-      setSnackbar({ open: true, message: 'Access key cannot be empty' });
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_BASE}/create_user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newUserEmail, access_key: newUserAccessKey }),
-      });
-
-      if (res.ok) {
-        setNewUserEmail('');
-        setNewUserAccessKey('');
-        setCreateDialogOpen(false);
-        await fetchUsers();
-      } else {
-        throw new Error('API call failed');
-      }
-    } catch (err) {
-      const errorMsg = 'Failed to create user';
-      console.error(errorMsg, err);
-      setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
-    }
+    setIsEditMode(false);
+    setEditingUser({
+      id: '',
+      email: '',
+      access_key: '',
+      password: '',
+      first_name: '',
+      last_name: '',
+      tva: '',
+      facturation_address: '',
+      facturation_account: '',
+      status: '',
+      created_at: '',
+    });
+    setUserDialogOpen(true);
   };
 
   const handleOpenEditDialog = (user: User) => {
+    setIsEditMode(true);
     setEditingUser({ ...user });
-    setEditDialogOpen(true);
+    setUserDialogOpen(true);
   };
 
-  const handleCloseEditDialog = () => {
-    setEditDialogOpen(false);
+  const handleCloseUserDialog = () => {
+    setUserDialogOpen(false);
     setEditingUser(null);
   };
 
-  const handleUpdateUser = async () => {
-    if (!editingUser) return;
-
-    try {
-      const { created_at, password, status, ...userToUpdate } = editingUser;
-      const res = await fetch(`${API_BASE}/update_user`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...userToUpdate }),
-      });
-
-      if (res.ok) {
-        setEditDialogOpen(false);
-        setEditingUser(null);
-        await fetchUsers();
-      } else {
-        throw new Error('API call failed');
-      }
-    } catch (err) {
-      const errorMsg = 'Failed to update user';
-      console.error(errorMsg, err);
-      setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
+  const handleUserFieldChange = (field: keyof User, value: string) => {
+    if (editingUser) {
+      setEditingUser({ ...editingUser, [field]: value });
     }
   };
 
-  const handleEditFieldChange = (field: keyof User, value: string) => {
-    if (editingUser) {
-      setEditingUser({ ...editingUser, [field]: value });
+  const handleSaveUser = async () => {
+    if (!editingUser) return;
+
+    if (isEditMode) {
+      // Update existing user
+      try {
+        const { created_at: _created_at, password: _password, status: _status, ...userToUpdate } = editingUser;
+        const res = await fetch(`${API_BASE}/update_user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...userToUpdate }),
+        });
+
+        if (res.ok) {
+          setUserDialogOpen(false);
+          setEditingUser(null);
+          await fetchUsers();
+        } else {
+          throw new Error('API call failed');
+        }
+      } catch (err) {
+        const errorMsg = 'Failed to update user';
+        console.error(errorMsg, err);
+        setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
+      }
+    } else {
+      // Create new user
+      if (!editingUser.email.trim()) {
+        setSnackbar({ open: true, message: 'Email cannot be empty' });
+        return;
+      }
+
+      if (!editingUser.access_key.trim()) {
+        setSnackbar({ open: true, message: 'Access key cannot be empty' });
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/create_user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: editingUser.email, access_key: editingUser.access_key }),
+        });
+
+        if (res.ok) {
+          setUserDialogOpen(false);
+          setEditingUser(null);
+          await fetchUsers();
+        } else {
+          throw new Error('API call failed');
+        }
+      } catch (err) {
+        const errorMsg = 'Failed to create user';
+        console.error(errorMsg, err);
+        setSnackbar({ open: true, message: `${errorMsg}: ${err instanceof Error ? err.message : 'Unknown error'}` });
+      }
     }
   };
 
@@ -412,27 +420,15 @@ function UsersPanel() {
                   <TableCell>{user.facturation_address || 'N/A'}</TableCell>
                   <TableCell>{user.facturation_account || 'N/A'}</TableCell>
                   <TableCell sx={{ wordBreak: 'break-all', maxWidth: 150 }}>{user.access_key}</TableCell>
-                 <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                   <TableCell>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenEditDialog(user)}
-                      color="primary"
-                    >
+                    <IconButton size="small" onClick={() => handleOpenEditDialog(user)} color="primary">
                       <EditIcon />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenRolesDialog(user.id)}
-                      color="info"
-                    >
+                    <IconButton size="small" onClick={() => handleOpenRolesDialog(user.id)} color="info">
                       <SecurityIcon />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDeleteUserClick(user.id)}
-                      color="error"
-                    >
+                    <IconButton size="small" onClick={() => handleDeleteUserClick(user.id)} color="error">
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
@@ -454,115 +450,80 @@ function UsersPanel() {
         </Alert>
       </Snackbar>
 
-      {/* Create user dialog */}
+      {/* User dialog (Create/Edit) */}
       <Dialog
-        open={createDialogOpen}
-        onClose={handleCloseCreateDialog}
-        aria-labelledby="create-user-dialog-title"
+        open={userDialogOpen}
+        onClose={handleCloseUserDialog}
+        aria-labelledby="user-dialog-title"
+        maxWidth="sm"
+        fullWidth
       >
-        <DialogTitle id="create-user-dialog-title">Create New User</DialogTitle>
+        <DialogTitle id="user-dialog-title">{isEditMode ? 'Edit User' : 'Create New User'}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 2 }}>
+            {isEditMode && <TextField label="ID" value={editingUser?.id || ''} variant="outlined" fullWidth disabled />}
             <TextField
               label="Email"
-              value={newUserEmail}
-              onChange={(e) => setNewUserEmail(e.target.value)}
+              value={editingUser?.email || ''}
+              onChange={(e) => handleUserFieldChange('email', e.target.value)}
               variant="outlined"
               fullWidth
               type="email"
             />
             <TextField
               label="Access Key"
-              value={newUserAccessKey}
-              onChange={(e) => setNewUserAccessKey(e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseCreateDialog}>Cancel</Button>
-          <Button onClick={handleCreateUser} variant="contained" color="primary">
-            Create User
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Edit user dialog */}
-      <Dialog
-        open={editDialogOpen}
-        onClose={handleCloseEditDialog}
-        aria-labelledby="edit-user-dialog-title"
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle id="edit-user-dialog-title">Edit User</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ mt: 2 }}>
-            <TextField
-              label="ID"
-              value={editingUser?.id || ''}
-              variant="outlined"
-              fullWidth
-              disabled
-            />
-            <TextField
-              label="Email"
-              value={editingUser?.email || ''}
-              onChange={(e) => handleEditFieldChange('email', e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
-            <TextField
-              label="Access Key"
               value={editingUser?.access_key || ''}
-              onChange={(e) => handleEditFieldChange('access_key', e.target.value)}
+              onChange={(e) => handleUserFieldChange('access_key', e.target.value)}
               variant="outlined"
               fullWidth
             />
-            <TextField
-              label="First Name"
-              value={editingUser?.first_name || ''}
-              onChange={(e) => handleEditFieldChange('first_name', e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
-            <TextField
-              label="Last Name"
-              value={editingUser?.last_name || ''}
-              onChange={(e) => handleEditFieldChange('last_name', e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
-            <TextField
-              label="TVA"
-              value={editingUser?.tva || ''}
-              onChange={(e) => handleEditFieldChange('tva', e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
-            <TextField
-              label="Facturation Address"
-              value={editingUser?.facturation_address || ''}
-              onChange={(e) => handleEditFieldChange('facturation_address', e.target.value)}
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={2}
-            />
-            <TextField
-              label="Facturation Account"
-              value={editingUser?.facturation_account || ''}
-              onChange={(e) => handleEditFieldChange('facturation_account', e.target.value)}
-              variant="outlined"
-              fullWidth
-            />
+            {isEditMode && (
+              <>
+                <TextField
+                  label="First Name"
+                  value={editingUser?.first_name || ''}
+                  onChange={(e) => handleUserFieldChange('first_name', e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                />
+                <TextField
+                  label="Last Name"
+                  value={editingUser?.last_name || ''}
+                  onChange={(e) => handleUserFieldChange('last_name', e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                />
+                <TextField
+                  label="TVA"
+                  value={editingUser?.tva || ''}
+                  onChange={(e) => handleUserFieldChange('tva', e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                />
+                <TextField
+                  label="Facturation Address"
+                  value={editingUser?.facturation_address || ''}
+                  onChange={(e) => handleUserFieldChange('facturation_address', e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={2}
+                />
+                <TextField
+                  label="Facturation Account"
+                  value={editingUser?.facturation_account || ''}
+                  onChange={(e) => handleUserFieldChange('facturation_account', e.target.value)}
+                  variant="outlined"
+                  fullWidth
+                />
+              </>
+            )}
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseEditDialog}>Cancel</Button>
-          <Button onClick={handleUpdateUser} variant="contained" color="primary">
-            Update User
+          <Button onClick={handleCloseUserDialog}>Cancel</Button>
+          <Button onClick={handleSaveUser} variant="contained" color="primary">
+            {isEditMode ? 'Update User' : 'Create User'}
           </Button>
         </DialogActions>
       </Dialog>

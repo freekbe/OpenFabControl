@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Alert,
   Box,
@@ -8,15 +9,18 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
+  Paper,
   Snackbar,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
 
 const API_BASE = '/web-admin-api';
@@ -32,6 +36,7 @@ function RolesPanel() {
   const [newRoleName, setNewRoleName] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
   const [deleteConfirmDialog, setDeleteConfirmDialog] = useState({ open: false, roleName: '' });
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const fetchRoles = async () => {
     setLoading(true);
@@ -56,6 +61,15 @@ function RolesPanel() {
     fetchRoles();
   }, []);
 
+  const handleOpenCreateDialog = () => {
+    setCreateDialogOpen(true);
+  };
+
+  const handleCloseCreateDialog = () => {
+    setCreateDialogOpen(false);
+    setNewRoleName('');
+  };
+
   const handleCreateRole = async () => {
     if (!newRoleName.trim()) {
       setSnackbar({ open: true, message: 'Role name cannot be empty' });
@@ -71,6 +85,7 @@ function RolesPanel() {
 
       if (res.ok) {
         setNewRoleName('');
+        setCreateDialogOpen(false);
         await fetchRoles();
       } else {
         throw new Error('API call failed');
@@ -137,50 +152,42 @@ function RolesPanel() {
       <Typography variant="h4" component="h1" gutterBottom>
         Roles
       </Typography>
-      <Typography variant="h6" gutterBottom>
-        Available Roles ({roles.length})
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6">Available Roles ({roles.length})</Typography>
+        <Button variant="contained" onClick={handleOpenCreateDialog}>
+          Create Role
+        </Button>
+      </Box>
       {roles.length === 0 ? (
         <Typography color="text.secondary">No roles available</Typography>
       ) : (
-        <List sx={{ width: 'fit-content' }}>
-          {roles.map((role) => (
-            <ListItem
-              key={role.name}
-              secondaryAction={
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleDeleteRoleClick(role.name)}
-                  color="error"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              }
-            >
-              <ListItemText primary={role.name} />
-            </ListItem>
-          ))}
-        </List>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="roles table">
+            <TableHead>
+              <TableRow sx={{ backgroundColor: 'action.hover' }}>
+                <TableCell>
+                  <strong>Role Name</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Actions</strong>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {roles.map((role) => (
+                <TableRow key={role.name} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableCell>{role.name}</TableCell>
+                  <TableCell>
+                    <IconButton size="small" onClick={() => handleDeleteRoleClick(role.name)} color="error">
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
-
-      <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="h6" gutterBottom>
-          Create New Role
-        </Typography>
-        <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-          <TextField
-            label="Role Name"
-            value={newRoleName}
-            onChange={(e) => setNewRoleName(e.target.value)}
-            variant="outlined"
-            size="small"
-          />
-          <Button variant="contained" onClick={handleCreateRole}>
-            Create Role
-          </Button>
-        </Stack>
-      </Box>
 
       <Snackbar
         open={snackbar.open}
@@ -192,6 +199,28 @@ function RolesPanel() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Create role dialog */}
+      <Dialog open={createDialogOpen} onClose={handleCloseCreateDialog} aria-labelledby="create-role-dialog-title">
+        <DialogTitle id="create-role-dialog-title">Create New Role</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 2 }}>
+            <TextField
+              label="Role Name"
+              value={newRoleName}
+              onChange={(e) => setNewRoleName(e.target.value)}
+              variant="outlined"
+              fullWidth
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseCreateDialog}>Cancel</Button>
+          <Button onClick={handleCreateRole} variant="contained" color="primary">
+            Create Role
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Delete confirmation dialog */}
       <Dialog
